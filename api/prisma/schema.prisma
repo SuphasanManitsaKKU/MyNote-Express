@@ -10,7 +10,7 @@ datasource db {
 model User {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   userid   Int    @unique
-  email    String
+  email    String @unique
   password String
 
   notes Note[]
@@ -23,8 +23,8 @@ model Note {
   content  String
   color    String
   date     String
-  status   String
   userid   Int
 
   user User @relation(fields: [userid], references: [userid])
 }
+

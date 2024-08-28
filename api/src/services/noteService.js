@@ -9,8 +9,8 @@ class NoteService {
     return noteRepository.getNoteById(noteid);
   }
 
-  async getAll() {
-    return noteRepository.getAllNotes();
+  async getAll(userid) {
+    return noteRepository.getAllNotes(userid);
   }
 
   async update(noteid, noteData) {
@@ -19,6 +19,22 @@ class NoteService {
 
   async delete(noteid) {
     return noteRepository.deleteNoteById(noteid);
+  }
+
+  async getId() {
+    return noteRepository.getNextId();
+  }
+
+  async getUserId() {
+    return noteRepository.getNextUserId();
+  }
+
+  async createUserr(userdata,res) {
+    return noteRepository.createUserrr(userdata,res);
+  }
+
+  async loginUser(userdata,res) {
+    return noteRepository.loginUser(userdata,res);
   }
 }
 

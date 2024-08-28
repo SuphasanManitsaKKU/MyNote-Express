@@ -4,30 +4,35 @@ import { useState, useRef, useEffect } from 'react';
 import Card from "./components/card";
 import Image from "next/image";
 import Swal from 'sweetalert2';
-import React from 'react';
+import axios from 'axios';
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+  // เริ่มต้น userid เป็น null หรือค่าที่ต้องการ
+  const [userid, setUserid] = useState(0);
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [cardColor, setCardColor] = useState('bg-white');
+  const [date, setDate] = useState('2020-08-03');
   const [selectedColor, setSelectedColor] = useState('bg-white');
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [cards, setCards] = useState<{ title: string; content: string; cardColor: string; isEditing: boolean }[]>([
-    { title: "Reset Your Password", content: "Enter your registered email to receive a reset link.", cardColor: "bg-[#FFCDD2]", isEditing: false },
-    { title: "Change Your Password", content: "Provide your email to update your password.", cardColor: "bg-[#BBDEFB]", isEditing: false },
-    { title: "Recover Password", content: "Submit your email to recover your account access.", cardColor: "bg-white", isEditing: false },
-    { title: "Update Password", content: "Enter your email address to reset your password.", cardColor: "bg-[#C8E6C9]", isEditing: false },
-    { title: "Password Assistance", content: "Please provide your email for password assistance.", cardColor: "bg-[#F0F4C3]", isEditing: false },
-    { title: "Forgotten Password", content: "Type your email to recover your password.", cardColor: "bg-[#FFECB3]", isEditing: false },
-    { title: "Password Reset", content: "Enter your email to request a password reset link.", cardColor: "bg-[#D1C4E9]", isEditing: false },
-    { title: "Account Recovery", content: "Submit your email to recover your account credentials.", cardColor: "bg-[#FFCCBC]", isEditing: false },
-    { title: "Lost Password", content: "Please enter your email to receive password recovery instructions.", cardColor: "bg-[#DCEDC8]", isEditing: false },
-    { title: "Restore Access", content: "Provide your email address to restore access to your account.", cardColor: "bg-[#F8BBD0]", isEditing: false }
-
-  ]);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [cards, setCards] = useState<{ cardId: number; title: string; content: string; cardColor: string; date: string; userid: number; isEditing: boolean }[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/getCookie');
+        setUserid(response.data.userId);
+      } catch (error) {
+        console.error('There was an error fetching the notes:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   function handleColorChange(color: string) {
     setCardColor(color);
@@ -44,7 +49,16 @@ export default function Home() {
     setIsPopupOpen(false);
   }
 
-  function handleSaveCard() {
+  async function getNextId() {
+    try {
+      const response = await axios.get('http://localhost:3001/api/nextNoteId');
+      return response.data.nextId;
+    } catch (error) {
+      console.error('There was an error fetching the notes:', error);
+    }
+  }
+
+  async function handleSaveCard() {
     if (title.trim() === "") {
       Swal.fire({
         icon: 'error',
@@ -54,10 +68,31 @@ export default function Home() {
       return;
     }
 
+    const newIs = await getNextId();
+    const newCard = {
+      noteid: newIs,
+      title: title,
+      content: content,
+      color: cardColor,
+      date: '',
+      userid: userid
+    };
     setCards([
       ...cards,
-      { title: title.trim(), content, cardColor, isEditing: false }
+      { cardId: newIs, title: title.trim(), content, cardColor, date, userid: userid, isEditing: false }
     ]);
+    const fetchNotes = async (newIs: any) => {
+      try {
+        console.log(newCard);
+        const response = await axios.post('http://localhost:3001/api/notes', newCard);
+        console.log("Card saved successfully");
+      } catch (error) {
+        console.error('There was an error fetching the notes:', error);
+      }
+    };
+
+    fetchNotes(newIs);
+
     setTitle("");
     setContent("");
     setCardColor('bg-white');
@@ -65,12 +100,36 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/notes/${userid}`);
+        const fetchedCards = response.data.map((note: any) => ({
+          cardId: note.noteid,
+          title: note.title,
+          content: note.content,
+          cardColor: note.color,
+          date: note.date,
+          userid: note.userid,
+          isEditing: false
+        }));
+        setCards(fetchedCards);
+        console.log(fetchedCards);
+      } catch (error) {
+        console.error('There was an error fetching the notes:', error);
+      }
+    };
+
+    if (userid !== null) {
+      fetchNotes();
+    }
+  }, [userid]);
+
+  useEffect(() => {
     if (isPopupOpen && titleInputRef.current) {
       titleInputRef.current.focus();
     }
   }, [isPopupOpen]);
 
-  // Handle logout function
   function handleLogout() {
     Swal.fire({
       icon: 'success',
@@ -78,9 +137,18 @@ export default function Home() {
       text: 'You have successfully logged out!',
     });
     // Add logout logic here, e.g., clearing user session
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/removeCookie');
+      } catch (error) {
+        console.error('There was an error fetching the notes:', error);
+      }
+    };
+    fetchData().then(() => {
+      router.push('/'); // ใช้ router navigation ที่ถูกต้อง
+    });
   }
 
-  // Filter cards based on search term
   const filteredCards = cards.filter(card =>
     card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     card.content.toLowerCase().includes(searchTerm.toLowerCase())
@@ -97,7 +165,6 @@ export default function Home() {
 
       <h1 className="text-3xl font-bold mb-8 mt-12">Forgot Password</h1>
 
-      {/* Search Bar */}
       <input
         type="text"
         value={searchTerm}
@@ -111,9 +178,12 @@ export default function Home() {
           filteredCards.map((card, index) => (
             <Card
               key={index}
+              cardId={card.cardId}
               title={card.title}
               content={card.content}
               cardColor={card.cardColor}
+              date={card.date}
+              userid={userid}
             />
           ))
         ) : (

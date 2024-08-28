@@ -25,7 +25,7 @@ class NoteController {
 
   async getAllNotes(req, res) {
     try {
-      const notes = await noteService.getAll();
+      const notes = await noteService.getAll(req.params.userid);
       res.status(200).json(notes);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -49,6 +49,41 @@ class NoteController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  async getNextNoteId(req, res) {
+    try {
+      const getNextId = await noteService.getId();
+      res.status(200).json({ nextId: getNextId });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
+  async nextUserId(req, res) {
+    try {
+      const nextUserId = await noteService.getUserId();
+      res.status(200).json({ nextUserId: nextUserId });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
+
+  async createUser(req, res) {
+    try {
+      const newUser = await noteService.createUserr(req.body,res);
+      res.status(200).json(newUser);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
+
+  async loginUser(req, res) {
+    try {
+      const token = await noteService.loginUser(req.body,res);
+      res.status(200).json(token);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
 }
 
 module.exports = new NoteController();

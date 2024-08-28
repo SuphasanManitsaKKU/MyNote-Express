@@ -1,21 +1,47 @@
-"use client";
+'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Swal from 'sweetalert2';
-import React from 'react';
+import axios from 'axios';
 
-export default function Card({ title: initialTitle, content: initialContent, cardColor: initialCardColor }: { title: string, content: string, cardColor: string }) {
+export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userid: initialUserid }: { cardId: number, title: string, content: string, cardColor: string, date: string, userid: number }) {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
-    const [cardColor, setCardColor] = useState(initialCardColor); // ตั้งค่าสีพื้นหลังเริ่มต้นเป็นสีขาว
-    const [selectedColor, setSelectedColor] = useState('bg-white'); // สถานะสำหรับสีที่เลือก
+    const [cardColor, setCardColor] = useState(initialCardColor);
+    const [date, setDate] = useState(initialDate);
+    const [userid, set๊serid] = useState(initialUserid);
+    const [selectedColor, setSelectedColor] = useState(initialCardColor);
 
-    const contentTextareaRef = useRef<HTMLTextAreaElement>(null); // ใช้ ref สำหรับช่องกรอกเนื้อหา
+    const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+    async function daleteNote() {
+        try {
+            const response = await axios.delete(`http://localhost:3001/api/notes/${initialCardId}`);
+            console.log('Note deleted successfully:', response.data);
+            window.location.reload(); // รีเฟรชหน้าเว็บ
+            console.log("sssssssssssssssssssssssssssssssssssssssssssssss");
+        } catch (error) {
+            console.error('There was an error deleting the note:', error);
+        }
+    }
+
+    async function update() {
+        try {
+            const response = await axios.put(`http://localhost:3001/api/notes/${initialCardId}`, {
+                title: title,
+                content: content,
+                color: selectedColor,
+            });
+            console.log('Note updated successfully:', response.data);
+        } catch (error) {
+            console.error('There was an error updating the note:', error);
+        }
+    }
 
     function handleDelete(event: React.MouseEvent) {
-        event.stopPropagation(); // ป้องกันการคลิกจากการแพร่กระจายไปยัง event ของ card
+        event.stopPropagation();
         Swal.fire({
             title: "Do you want to delete this note?",
             showDenyButton: true,
@@ -31,7 +57,7 @@ export default function Card({ title: initialTitle, content: initialContent, car
                     showConfirmButton: true,
                     timer: 1500
                 }).then(() => {
-                    setIsEditing(false); // ออกจากโหมดแก้ไขเมื่อยืนยันการลบ
+                    daleteNote(); // เรียกใช้ฟังก์ชันลบ
                 });
             }
         });
@@ -43,27 +69,28 @@ export default function Card({ title: initialTitle, content: initialContent, car
 
     function handleCancel() {
         setIsEditing(false);
+        update(); // อัปเดตข้อมูลเมื่อออกจากโหมดแก้ไข
     }
 
     function handleClickOutside(event: React.MouseEvent) {
         if (event.target instanceof HTMLElement) {
             const target = event.target as HTMLElement;
             if (!target.closest('.card-content') && !target.closest('.delete-btn')) {
-                setIsEditing(false);
+                handleCancel();
             }
         }
     }
 
-    function handleColorChange(color: string) {
-        setCardColor(color); // เปลี่ยนสีของการ์ดตามที่เลือก
-        setSelectedColor(color); // ตั้งค่าสีที่เลือก
+    async function handleColorChange(color: string) {
+        setCardColor(color);
+        setSelectedColor(color);
     }
 
     useEffect(() => {
         if (isEditing && contentTextareaRef.current) {
             const textarea = contentTextareaRef.current;
-            textarea.focus(); // ตั้งโฟกัสไปที่ช่องกรอกเนื้อหาเมื่อเข้าสู่โหมดแก้ไข
-            textarea.setSelectionRange(textarea.value.length, textarea.value.length); // เลื่อนไปที่ตำแหน่งสุดท้ายของเนื้อหา
+            textarea.focus();
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
         }
     }, [isEditing]);
 
@@ -102,12 +129,12 @@ export default function Card({ title: initialTitle, content: initialContent, car
                                     className="w-full border-none bg-transparent outline-none mb-4"
                                     placeholder="Title"
                                 />
-                                <p className='text-gray-400 text-xs text-right'>14:14 25 Aug 2024</p>
+                                <p className='text-gray-400 text-xs text-right'>{date}</p>
                             </div>
 
                             <hr />
                             <textarea
-                                ref={contentTextareaRef} // กำหนด ref ให้กับช่องกรอกเนื้อหา
+                                ref={contentTextareaRef}
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 className="w-full h-full border-none bg-transparent outline-none resize-none"
