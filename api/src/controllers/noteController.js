@@ -84,9 +84,11 @@ class NoteController {
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None',
+        sameSite: 'None', // ต้องใช้ 'None' เพื่อให้คุกกี้ถูกส่งข้ามโดเมน
+        domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
         maxAge: 3600000,
       });
+
 
       res.status(200).json({ token });
     } catch (error) {

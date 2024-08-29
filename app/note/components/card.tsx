@@ -18,10 +18,9 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
 
     async function daleteNote() {
         try {
-            const response = await axios.delete(`http://localhost:3001/api/notes/${initialCardId}`);
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`);
             console.log('Note deleted successfully:', response.data);
             window.location.reload(); // รีเฟรชหน้าเว็บ
-            console.log("sssssssssssssssssssssssssssssssssssssssssssssss");
         } catch (error) {
             console.error('There was an error deleting the note:', error);
         }
@@ -29,7 +28,7 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
 
     async function update() {
         try {
-            const response = await axios.put(`http://localhost:3001/api/notes/${initialCardId}`, {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`, {
                 title: title,
                 content: content,
                 color: selectedColor,

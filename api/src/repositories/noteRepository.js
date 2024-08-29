@@ -88,11 +88,24 @@ class NoteRepository {
     const { userid, email, password } = userdata;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'email and password are required' });
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // ตรวจสอบว่า email ซ้ำหรือไม่
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (existingUser) {
+      throw new Error('Invalid email or password');
     }
 
     // เข้ารหัสรหัสผ่าน
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // สร้างผู้ใช้ใหม่ในฐานข้อมูล
     const user = await prisma.user.create({
       data: {
         userid: userid,
@@ -100,33 +113,35 @@ class NoteRepository {
         password: hashedPassword,
       },
     });
+
+    // ส่ง response กลับไปพร้อมข้อมูลของผู้ใช้ใหม่
     res.status(200).json(user);
   }
 
   async loginUser(userdata) {
     const { email, password } = userdata;
 
-  if (!email || !password) {
-    throw new Error('email and password are required');
-  }
+    if (!email || !password) {
+      throw new Error('email and password are required');
+    }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-  if (!user) {
-    throw new Error('Invalid email or password');
-  }
+    if (!user) {
+      throw new Error('Invalid email or password');
+    }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-  if (!isMatch) {
-    throw new Error('Invalid email or password');
-  }
+    if (!isMatch) {
+      throw new Error('Invalid email or password');
+    }
 
-  const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-  return token;
+    return token;
 
   }
 }

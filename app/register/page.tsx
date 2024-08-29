@@ -11,25 +11,40 @@ export default function Home() {
   const router = useRouter();
 
   async function NextUserId() {
-    const response = await axios.get('http://localhost:3001/api/nextUserId');
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/nextUserId`);
     return response.data.nextUserId;
   }
 
   async function Register() {
-    const nextUserId = await NextUserId();
-    await axios.post('http://localhost:3001/api/register', {
-      userid: nextUserId,
-      email: email,
-      password: password,
-    });
+    try {
+      // เรียกใช้ฟังก์ชันเพื่อสร้าง user ID ใหม่
+      const nextUserId = await NextUserId();
 
-    Swal.fire({
-      icon: 'success',
-      title: 'User Created',
-      text: 'Your account has been successfully created!',
-    }).then(() => {
-      router.push('/'); // ใช้ router navigation ที่ถูกต้อง
-    });
+      // ส่งข้อมูลการสมัครไปที่ API และรอผลลัพธ์
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/register`, {
+        userid: nextUserId,
+        email: email,
+        password: password,
+      });
+
+      // แสดงข้อความเมื่อสร้างบัญชีสำเร็จ
+      Swal.fire({
+        icon: 'success',
+        title: 'User Created',
+        text: 'Your account has been successfully created!',
+      }).then(() => {
+        router.push('/'); // เปลี่ยนเส้นทางไปยังหน้าแรก
+      });
+    } catch (error) {
+      console.log(error);
+
+      // แสดงข้อความเมื่อเกิดข้อผิดพลาด
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to create account. Please try again.',
+      });
+    }
   }
 
   return (

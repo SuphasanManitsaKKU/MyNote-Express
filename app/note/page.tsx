@@ -25,7 +25,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/getCookie');
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/getCookie`);
         setUserid(response.data.userId);
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
@@ -51,7 +51,7 @@ export default function Home() {
 
   async function getNextId() {
     try {
-      const response = await axios.get('http://localhost:3001/api/nextNoteId');
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/nextNoteId`);
       return response.data.nextId;
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
@@ -84,7 +84,7 @@ export default function Home() {
     const fetchNotes = async (newIs: any) => {
       try {
         console.log(newCard);
-        const response = await axios.post('http://localhost:3001/api/notes', newCard);
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/notes`, newCard);
         console.log("Card saved successfully");
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
@@ -102,7 +102,7 @@ export default function Home() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/notes/${userid}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/notes/${userid}`);
         const fetchedCards = response.data.map((note: any) => ({
           cardId: note.noteid,
           title: note.title,
@@ -139,7 +139,7 @@ export default function Home() {
     // Add logout logic here, e.g., clearing user session
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/removeCookie');
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/removeCookie`);
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
       }

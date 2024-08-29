@@ -12,18 +12,12 @@ export default function Home() {
 
   async function Login() {
     try {
-      console.log("fffffffffffffffffffffffffffffffffffffffffffffffff");
-      
-      const response = await axios.post(`http://localhost:3001/api/login`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
         email: email,
         password: password,
-      }, {
-        withCredentials: true, // ทำให้คุกกี้ถูกส่งไปและรับจากเซิร์ฟเวอร์
-      }
-      );
-      console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
-      
-
+    }, {
+        withCredentials: true, // สำคัญมาก: เพื่อให้คุกกี้ถูกส่งและรับกลับมา
+    });
 
       Swal.fire({
         icon: 'success',
