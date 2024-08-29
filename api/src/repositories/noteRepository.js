@@ -113,7 +113,7 @@ class NoteRepository {
   const user = await prisma.user.findUnique({
     where: { email },
   });
-  
+
   if (!user) {
     throw new Error('Invalid email or password');
   }
