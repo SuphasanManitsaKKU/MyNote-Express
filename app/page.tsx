@@ -12,7 +12,7 @@ export default function Home() {
 
   async function Login() {
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
+      await axios.post(`http://localhost:3001/api/login`, {
         email: email,
         password: password,
       }, {
