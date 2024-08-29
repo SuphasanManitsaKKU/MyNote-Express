@@ -7,9 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:3000', // หรือโดเมนของเว็บแอปพลิเคชันของคุณ
+    origin: ['http://localhost:3000', 'https://www.suphasan.site'],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
+
 
 app.use(express.json());
 app.use('/api', noteRoutes);

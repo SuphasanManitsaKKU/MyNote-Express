@@ -25,7 +25,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/getCookie');
+        const response = await axios.get('/api/getCookie');
         setUserid(response.data.userId);
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
@@ -139,7 +139,7 @@ export default function Home() {
     // Add logout logic here, e.g., clearing user session
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/removeCookie');
+        const response = await axios.get('/api/removeCookie');
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
       }

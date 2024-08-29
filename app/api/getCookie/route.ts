@@ -8,7 +8,7 @@ interface DecodedToken {
 }
 
 // Define the secret key for JWT verification
-const JWT_SECRET = '1234'; // Replace with your actual secret key
+const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET ?? ''; // Replace with your actual secret key or provide a default value
 
 // Define the GET function
 export async function GET() {
@@ -20,7 +20,7 @@ export async function GET() {
     if (token) {
         try {
             // Verify and decode the JWT token
-            const decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
+            const decoded = jwt.verify(token, JWT_SECRET || '') as DecodedToken;
             const userId = decoded.userId ? Number(decoded.userId) : null;
 
             // Return the user ID in the response

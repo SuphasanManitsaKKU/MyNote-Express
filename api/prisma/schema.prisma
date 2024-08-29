@@ -28,3 +28,6 @@ model Note {
   user User @relation(fields: [userid], references: [userid])
 }
 
+// npm install express @prisma/client
+// npx prisma generate
+// 

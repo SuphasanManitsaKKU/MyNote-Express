@@ -130,10 +130,11 @@ class NoteRepository {
       const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None', // หรือ 'Strict' / 'Lax' ตามความต้องการ
-        maxAge: 3600000,
-      });
+        secure: process.env.NODE_ENV === 'production', // หรือใช้เงื่อนไขเพิ่มเติมถ้าจำเป็น
+        sameSite: 'None', // หรือปรับตามความต้องการ
+        maxAge: 3600000, // 1 ชั่วโมง
+        domain: '.suphasan.site', // ตั้งค่าตามโดเมนที่ใช้งานจริง
+    });
 
       res.json({ token });
 
