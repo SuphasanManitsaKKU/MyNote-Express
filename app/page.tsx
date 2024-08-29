@@ -15,9 +15,9 @@ export default function Home() {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
         email: email,
         password: password,
-    }, {
+      }, {
         withCredentials: true, // สำคัญมาก: เพื่อให้คุกกี้ถูกส่งและรับกลับมา
-    });
+      });
 
       Swal.fire({
         icon: 'success',

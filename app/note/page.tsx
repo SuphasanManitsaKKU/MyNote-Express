@@ -163,7 +163,7 @@ export default function Home() {
         Log Out
       </button>
 
-      <h1 className="text-3xl font-bold mb-8 mt-12">Forgot Password</h1>
+      <h1 className="text-3xl font-bold mb-8 mt-12">Super Note</h1>
 
       <input
         type="text"
@@ -174,7 +174,9 @@ export default function Home() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
+
         {filteredCards.length > 0 ? (
+
           filteredCards.map((card, index) => (
             <Card
               key={index}
@@ -187,7 +189,7 @@ export default function Home() {
             />
           ))
         ) : (
-          <p>No cards found</p>
+          <></>
         )}
       </div>
 

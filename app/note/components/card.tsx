@@ -99,15 +99,15 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={handleClickOutside} />
             )}
             <div
-                className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content ${isEditing ? 'fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105' : ''}`}
+                className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content ${isEditing ? 'fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105' : 'min-h-full relative'}`}
                 onClick={handleEditMode}
             >
                 {!isEditing ? (
                     <>
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
-                        <hr className="mb-4" />
-                        <p className="text-gray-600">{content}</p>
-                        <div className='flex justify-end delete-btn'>
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4 overflow-hidden text-ellipsis whitespace-nowrap">{title}</h2>
+                        <hr className="mb-4 border-black" />
+                        <p className="text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">{content}</p>
+                        <div className='delete-btn absolute bottom-4 right-4'>
                             <Image
                                 width={25}
                                 height={25}
@@ -130,8 +130,7 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                                 />
                                 <p className='text-gray-400 text-xs text-right'>{date}</p>
                             </div>
-
-                            <hr />
+                            <hr className="mb-4 border-black" />
                             <textarea
                                 ref={contentTextareaRef}
                                 value={content}
