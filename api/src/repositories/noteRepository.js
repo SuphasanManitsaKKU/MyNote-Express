@@ -114,6 +114,7 @@ class NoteRepository {
     where: { email },
   });
 
+  
   if (!user) {
     throw new Error('Invalid email or password');
   }
