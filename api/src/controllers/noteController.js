@@ -1,3 +1,4 @@
+const { log } = require('console');
 const noteService = require('../services/noteService');
 
 class NoteController {
@@ -69,7 +70,7 @@ class NoteController {
 
   async createUser(req, res) {
     try {
-      const newUser = await noteService.createUserr(req.body,res);
+      const newUser = await noteService.createUserr(req.body, res);
       res.status(200).json(newUser);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -78,12 +79,21 @@ class NoteController {
 
   async loginUser(req, res) {
     try {
-      const token = await noteService.loginUser(req.body,res);
-      res.status(200).json(token);
+      const token = await noteService.loginUser(req.body);
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None',
+        maxAge: 3600000,
+      });
+
+      res.status(200).json({ token });
     } catch (error) {
+      console.log("Login error:", error.message);
       res.status(400).json({ error: error.message });
     }
-  };
+  }
 }
 
 module.exports = new NoteController();

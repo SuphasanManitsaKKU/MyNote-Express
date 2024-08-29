@@ -103,44 +103,30 @@ class NoteRepository {
     res.status(200).json(user);
   }
 
-  async loginUser(userdata, res) {
+  async loginUser(userdata) {
     const { email, password } = userdata;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'email and password are required' });
-    }
+  if (!email || !password) {
+    throw new Error('email and password are required');
+  }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
 
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
+  if (!user) {
+    throw new Error('Invalid email or password');
+  }
 
-    // ตรวจสอบรหัสผ่าน
-    const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
+  if (!isMatch) {
+    throw new Error('Invalid email or password');
+  }
 
-    // สร้าง JWT token
-    try {
-      const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // หรือใช้เงื่อนไขเพิ่มเติมถ้าจำเป็น
-        sameSite: 'None', // หรือปรับตามความต้องการ
-        maxAge: 3600000, // 1 ชั่วโมง
-        domain: '.suphasan.site', // ตั้งค่าตามโดเมนที่ใช้งานจริง
-    });
+  const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-      res.json({ token });
-
-    } catch (error) {
-      console.log(error);
-    }
+  return token;
 
   }
 }

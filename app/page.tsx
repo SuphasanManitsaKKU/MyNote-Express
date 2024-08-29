@@ -12,13 +12,18 @@ export default function Home() {
 
   async function Login() {
     try {
-      await axios.post(`http://localhost:3001/api/login`, {
+      console.log("fffffffffffffffffffffffffffffffffffffffffffffffff");
+      
+      const response = await axios.post(`http://localhost:3001/api/login`, {
         email: email,
         password: password,
       }, {
         withCredentials: true, // ทำให้คุกกี้ถูกส่งไปและรับจากเซิร์ฟเวอร์
       }
-    );
+      );
+      console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+      
+
 
       Swal.fire({
         icon: 'success',

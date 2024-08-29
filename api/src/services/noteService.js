@@ -33,8 +33,8 @@ class NoteService {
     return noteRepository.createUserrr(userdata,res);
   }
 
-  async loginUser(userdata,res) {
-    return noteRepository.loginUser(userdata,res);
+  async loginUser(userdata) {
+    return noteRepository.loginUser(userdata);
   }
 }
 
