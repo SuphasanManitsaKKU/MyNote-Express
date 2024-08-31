@@ -18,9 +18,9 @@ async function sendEmail(email, token) {
     const info = await transporter.sendMail({
       from: 'suphasan.m@kkumail.com', // Sender address
       to: `${email}`, // List of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // Plain text body
-      html: `<b>Hello world? 3 <a href="https://www.suphasan.site/change_password/${token}">Click me</a></b>`, // HTML body
+      subject: "Change Password", // Subject line
+      text: "Change Password?", // Plain text body
+      html: `<b>Change Password Click => <a href="https://www.suphasan.site/change_password/${token}">Click me</a></b>`, // HTML body
     });
     return 1;
   } catch (error) {
