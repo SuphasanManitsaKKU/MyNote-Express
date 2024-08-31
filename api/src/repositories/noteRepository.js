@@ -144,6 +144,27 @@ class NoteRepository {
     return token;
 
   }
+
+  async forgotPassword(userdata) {
+    const { email } = userdata;
+
+    if (!email) {
+      throw new Error('email are required');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error('Invalid email');
+    }
+
+    const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET_CHANGE_PASSWORD, { expiresIn: '1h' });
+
+    return "success";
+
+  }
 }
 
 module.exports = new NoteRepository();

@@ -36,6 +36,10 @@ class NoteService {
   async loginUser(userdata) {
     return noteRepository.loginUser(userdata);
   }
+  async forgotPassword(email) {
+    return noteRepository.forgotPassword(email);
+  }
+
 }
 
 module.exports = new NoteService();

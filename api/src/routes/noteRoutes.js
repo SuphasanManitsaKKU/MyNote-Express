@@ -16,6 +16,7 @@ try {
 
     router.post('/register', noteController.createUser); // สร้างผู้ใช้
     router.post('/login', noteController.loginUser); // เข้าสู่ระบบ
+    router.post('/forgotpassword', noteController.loginUser); // เข้าสู่ระบบ
 }
 catch (error) {
     console.log("hehe");
