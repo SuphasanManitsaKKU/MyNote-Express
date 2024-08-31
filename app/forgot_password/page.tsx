@@ -1,4 +1,35 @@
+'use client';
+
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import { useState } from "react";
+
 export default function Home() {
+  const router = useRouter();
+  const [email, setEmail] = useState(""); // ใช้ useState เพื่อจัดการกับค่าของอีเมล
+
+  async function Send() {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/forgotpassword`, {
+        email: email,
+      });
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Please check your email to reset your password.',
+      }).then(() => {
+        router.push('/'); // ใช้ router navigation ที่ถูกต้อง
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'There was an error sending the email. Please try again later.',
+      });
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md">
@@ -15,11 +46,12 @@ export default function Home() {
               id="email"
               type="email"
               placeholder="กรอกอีเมล"
-
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} // จัดการกับการเปลี่ยนแปลงของฟิลด์อินพุต
             />
           </div>
           <div className="flex items-center justify-center">
-            <button className="btn custom-green hover:bg-green-600 bg-green-400  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+            <button onClick={Send} className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
               Send
             </button>
           </div>

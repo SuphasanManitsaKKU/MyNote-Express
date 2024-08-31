@@ -1,6 +1,32 @@
 const prisma = require('../prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // ใช้ require สำหรับ CommonJS
+const nodemailer = require("nodemailer");
+
+async function sendEmail(email, token) {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // SMTP server for Gmail
+    port: 465,
+    secure: true, // Use `true` for port 465, `false` for other ports
+    auth: {
+      user: "suphasan.m@kkumail.com", // Your email address
+      pass: "qbji nsrg mtoz skgz", // Your email password or app-specific password
+    },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: 'suphasan.m@kkumail.com', // Sender address
+      to: `${email}`, // List of receivers
+      subject: "Hello ✔", // Subject line
+      text: "Hello world?", // Plain text body
+      html: `<b>Hello world? 3 <a href="https://www.suphasan.site/change_password/${token}">Click me</a></b>`, // HTML body
+    });
+    return 1;
+  } catch (error) {
+    return 0;
+  }
+}
 
 class NoteRepository {
   async createNote(note) {
@@ -162,9 +188,55 @@ class NoteRepository {
 
     const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET_CHANGE_PASSWORD, { expiresIn: '1h' });
 
+    // -----------------------------------------------------------------------------------------------------------------------------
+    const response = await sendEmail(user.email, token);
+    if (response === 0) {
+      throw new Error('Email not sent');
+    }
     return "success";
-
   }
+
+  async changepassword(userdata) {
+    const { token, password, confirmPassword } = userdata;
+    console.log(token);
+    console.log(password);
+    console.log(confirmPassword);
+
+    try {
+      if (password !== confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
+
+      // ตรวจสอบและถอดรหัสโทเค็น
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_CHANGE_PASSWORD);
+      const userId = decoded.userId;
+
+      console.log(userId, "userId");
+
+      // ค้นหาผู้ใช้จาก userId
+      const user = await prisma.user.findUnique({
+        where: { userid: userId }, // สมมติว่าในฐานข้อมูลใช้ 'id' เป็นคีย์หลัก
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // เปลี่ยนรหัสผ่าน
+      await prisma.user.update({
+        where: { userid: userId },
+        data: {
+          password: await bcrypt.hash(password, 10), // ใช้ bcrypt ในการเข้ารหัสรหัสผ่านใหม่
+        },
+      });
+    }
+    catch (error) {
+      throw new Error("Invalid token");
+    }
+
+    return "Password changed successfully";
+  }
+
 }
 
 module.exports = new NoteRepository();

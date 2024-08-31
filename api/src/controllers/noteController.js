@@ -100,11 +100,19 @@ class NoteController {
   async forgotPassword(req, res) {
     try {
       const status = await noteService.forgotPassword(req.body);
-      res.status(200).json({ status : status });
+      res.status(200).json({ status: status });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
-  };
-}
+  }
 
+  async changepassword(req, res) {
+    try {
+      const status = await noteService.changepassword(req.body);
+      res.status(200).json({ status: status });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+}
 module.exports = new NoteController();

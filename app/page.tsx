@@ -10,20 +10,25 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  async function Login() {
+  async function Login(event: any) {
+    event.preventDefault(); // Prevent the page from refreshing
+
     try {
+      console.log("-------------------------------------------------------------------------");
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
         email: email,
         password: password,
       }, {
         withCredentials: true, // สำคัญมาก: เพื่อให้คุกกี้ถูกส่งและรับกลับมา
       });
+      console.log("-------------------------------------------------------------------------");
 
       Swal.fire({
         icon: 'success',
         title: 'Login Successful',
         text: 'You have successfully logged in!',
-      }).then(() => {
+      })
+      .then(() => {
         router.push('/note'); // ใช้ router navigation ที่ถูกต้อง
       });
     } catch (error) {
@@ -41,7 +46,7 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-3xl font-bold mb-8">Super Note</h1>
       <div className="w-full max-w-md">
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={Login}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
               Email
@@ -78,7 +83,6 @@ export default function Home() {
             <button
               className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
-              onClick={Login}
             >
               Login
             </button>
