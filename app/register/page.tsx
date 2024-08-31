@@ -15,7 +15,18 @@ export default function Home() {
     return response.data.nextUserId;
   }
 
-  async function Register() {
+  async function Register(e:any) {
+    e.preventDefault(); // ป้องกันการโหลดหน้าใหม่
+
+    if (!email || !password) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Please fill in all fields.',
+      });
+      return;
+    }
+
     try {
       // เรียกใช้ฟังก์ชันเพื่อสร้าง user ID ใหม่
       const nextUserId = await NextUserId();
@@ -50,7 +61,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md">
-        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={Register}>
           <div className="flex items-center justify-center">
             <h1 className="text-3xl font-bold mb-8">Register</h1>
           </div>
@@ -83,13 +94,12 @@ export default function Home() {
           <div className="flex items-center justify-center">
             <button
               className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
-              onClick={Register}
+              type="submit"
             >
               Register
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
