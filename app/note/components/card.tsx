@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userid: initialUserid }: { cardId: number, title: string, content: string, cardColor: string, date: string, userid: number }) {
+export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userid: initialUserid, onDelete }: { cardId: number, title: string, content: string, cardColor: string, date: string, userid: number, onDelete: (id: number) => void }) {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
@@ -19,7 +19,7 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
     async function daleteNote() {
         try {
             const response = await axios.delete(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`);
-            window.location.reload(); // รีเฟรชหน้าเว็บ
+            // window.location.reload(); // รีเฟรชหน้าเว็บ
         } catch (error) {
             console.error('There was an error deleting the note:', error);
         }
@@ -37,7 +37,7 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
         }
     }
 
-    function handleDelete(event: React.MouseEvent) {
+    async function handleDelete(event: React.MouseEvent) {
         event.stopPropagation();
         Swal.fire({
             title: "Do you want to delete this note?",
@@ -55,6 +55,7 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                     timer: 1500
                 }).then(() => {
                     daleteNote(); // เรียกใช้ฟังก์ชันลบ
+                    onDelete(initialCardId); // เรียกใช้ฟังก์ชัน onDelete ที่ส่งมาจาก props
                 });
             }
         });

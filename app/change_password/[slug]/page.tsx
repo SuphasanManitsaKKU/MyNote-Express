@@ -12,15 +12,12 @@ export default function Page({ params }: { params: { slug: string } }) {
   const router = useRouter();
 
   async function Send() {
-    console.log(token, password, confirmPassword);
     try {
-      console.log("---------------------------------------------");
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/changepassword`, {
         token: token,
         password: password,
         confirmPassword: confirmPassword,
       });
-      console.log("---------------------------------------------");
       Swal.fire({
         icon: 'success',
         title: 'Success',

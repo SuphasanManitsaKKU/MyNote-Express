@@ -155,8 +155,11 @@ export default function Home() {
     );
   }, [cards, searchTerm]);
 
+  function handleDeleteCard(id: number) {
+    setCards(cards.filter(card => card.cardId !== id));
+}
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
+<div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
       <button
         onClick={handleLogout}
         className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -174,24 +177,24 @@ export default function Home() {
         placeholder="Search cards by title or content"
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
-
-        {filteredCards.length > 0 ? (
-          filteredCards.map((card, index) => (
-            <Card
-              key={index}
-              cardId={card.cardId}
-              title={card.title}
-              content={card.content}
-              cardColor={card.cardColor}
-              date={card.date}
-              userid={userid}
-            />
-          ))
-        ) : (
-          <></>
-        )}
-      </div>
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
+                {filteredCards.length > 0 ? (
+                    filteredCards.map((card, index) => (
+                        <Card
+                            key={index}
+                            cardId={card.cardId}
+                            title={card.title}
+                            content={card.content}
+                            cardColor={card.cardColor}
+                            date={card.date}
+                            userid={userid}
+                            onDelete={handleDeleteCard} // ส่งฟังก์ชัน handleDeleteCard ไปที่ Card
+                        />
+                    ))
+                ) : (
+                    <></>
+                )}
+            </div>
 
       <div className="fixed bottom-4 right-4">
         <Image
