@@ -14,14 +14,12 @@ export default function Home() {
     event.preventDefault(); // Prevent the page from refreshing
 
     try {
-      console.log("-------------------------------------------------------------------------");
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
         email: email,
         password: password,
       }, {
         withCredentials: true, // สำคัญมาก: เพื่อให้คุกกี้ถูกส่งและรับกลับมา
       });
-      console.log("-------------------------------------------------------------------------");
 
       Swal.fire({
         icon: 'success',

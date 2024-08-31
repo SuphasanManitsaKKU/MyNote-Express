@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Card from "./components/card";
 import Image from "next/image";
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useRouter } from "next/navigation";
+import debounce from 'lodash.debounce';
 
 export default function Home() {
   const router = useRouter();
-  // เริ่มต้น userid เป็น null หรือค่าที่ต้องการ
   const [userid, setUserid] = useState(0);
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [cardColor, setCardColor] = useState('bg-white');
@@ -83,9 +82,7 @@ export default function Home() {
     ]);
     const fetchNotes = async (newIs: any) => {
       try {
-        console.log(newCard);
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/notes`, newCard);
-        console.log("Card saved successfully");
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
       }
@@ -113,7 +110,6 @@ export default function Home() {
           isEditing: false
         }));
         setCards(fetchedCards);
-        console.log(fetchedCards);
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
       }
@@ -136,7 +132,6 @@ export default function Home() {
       title: 'Logged Out',
       text: 'You have successfully logged out!',
     });
-    // Add logout logic here, e.g., clearing user session
     const fetchData = async () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/removeCookie`);
@@ -145,14 +140,20 @@ export default function Home() {
       }
     };
     fetchData().then(() => {
-      router.push('/'); // ใช้ router navigation ที่ถูกต้อง
+      router.push('/');
     });
   }
 
-  const filteredCards = cards.filter(card =>
-    card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    card.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearchChange = debounce((value:any) => {
+    setSearchTerm(value);
+  }, 300);
+
+  const filteredCards = useMemo(() => {
+    return cards.filter(card =>
+      card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      card.content.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [cards, searchTerm]);
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
@@ -168,7 +169,7 @@ export default function Home() {
       <input
         type="text"
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => handleSearchChange(e.target.value)}
         className="mb-6 p-2 border border-gray-300 rounded-lg w-2/3"
         placeholder="Search cards by title or content"
       />
@@ -176,7 +177,6 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
 
         {filteredCards.length > 0 ? (
-
           filteredCards.map((card, index) => (
             <Card
               key={index}

@@ -15,7 +15,7 @@ export default function Home() {
     return response.data.nextUserId;
   }
 
-  async function Register(e:any) {
+  async function Register(e: any) {
     e.preventDefault(); // ป้องกันการโหลดหน้าใหม่
 
     if (!email || !password) {
