@@ -5,13 +5,13 @@ import Image from 'next/image';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userid: initialUserid, onDelete }: { cardId: number, title: string, content: string, cardColor: string, date: string, userid: number, onDelete: (id: number) => void }) {
+export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userId: initialuserId, onDelete }: { cardId: string, title: string, content: string, cardColor: string, date: string, userId: string, onDelete: (id: string) => void }) {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
     const [cardColor, setCardColor] = useState(initialCardColor);
     const [date, setDate] = useState(initialDate);
-    const [userid, set๊serid] = useState(initialUserid);
+    const [userId, setUserid] = useState(initialuserId);
     const [selectedColor, setSelectedColor] = useState(initialCardColor);
 
     const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -27,6 +27,7 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
 
     async function update() {
         try {
+
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`, {
                 title: title,
                 content: content,

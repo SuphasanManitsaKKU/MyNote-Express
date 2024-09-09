@@ -1,1 +1,1 @@
-docker compose up mongo6
+docker compose up -d mongo6

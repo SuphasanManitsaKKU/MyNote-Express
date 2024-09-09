@@ -21,7 +21,7 @@ export async function GET() {
         try {
             // Verify and decode the JWT token
             const decoded = jwt.verify(token, JWT_SECRET || '') as DecodedToken;
-            const userId = decoded.userId ? Number(decoded.userId) : null;
+            const userId = decoded.userId ? decoded.userId : null;
 
             // Return the user ID in the response
             return new Response(JSON.stringify({ userId }), { status: 200 });

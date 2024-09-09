@@ -26,7 +26,7 @@ class NoteController {
 
   async getAllNotes(req, res) {
     try {
-      const notes = await noteService.getAll(req.params.userid);
+      const notes = await noteService.getAll(req.params.userId);
       res.status(200).json(notes);
     } catch (error) {
       res.status(400).json({ error: error.message });

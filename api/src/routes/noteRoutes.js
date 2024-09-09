@@ -6,22 +6,21 @@ try {
 
 
     router.post('/notes', noteController.createNote);
-    router.get('/notes/:userid', noteController.getAllNotes);
+    router.get('/notes/:userId', noteController.getAllNotes);
     // router.get('/notes/:noteid', noteController.getNoteById);
     router.put('/notes/:noteid', noteController.updateNote);
     router.delete('/notes/:noteid', noteController.deleteNote);
 
-    router.get('/nextNoteId', noteController.getNextNoteId);
-    router.get('/nextUserId', noteController.nextUserId);
+    // router.get('/nextNoteId', noteController.getNextNoteId);
+    // router.get('/nextUserId', noteController.nextUserId);
 
-    router.post('/register', noteController.createUser); // สร้างผู้ใช้
     router.post('/login', noteController.loginUser); // เข้าสู่ระบบ
+    router.post('/register', noteController.createUser); // สร้างผู้ใช้
     router.post('/forgotpassword', noteController.forgotPassword); // เข้าสู่ระบบ
     router.post('/changepassword', noteController.changepassword); // เข้าสู่ระบบ
 }
 catch (error) {
     console.log("hehe");
-
 }
 
 module.exports = router;

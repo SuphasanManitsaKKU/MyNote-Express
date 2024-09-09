@@ -12,6 +12,7 @@ export default function Home() {
 
   async function Login(event: any) {
     event.preventDefault(); // Prevent the page from refreshing
+    console.log("email", email);
 
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
@@ -29,7 +30,9 @@ export default function Home() {
       .then(() => {
         router.push('/note'); // ใช้ router navigation ที่ถูกต้อง
       });
+
     } catch (error) {
+      console.log("dfghjk");
       console.error(error);
 
       Swal.fire({

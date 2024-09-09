@@ -10,28 +10,17 @@ import debounce from 'lodash.debounce';
 
 export default function Home() {
   const router = useRouter();
-  const [userid, setUserid] = useState(0);
+  const [userId, setUserId] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [cardColor, setCardColor] = useState('bg-white');
   const [date, setDate] = useState('2020-08-03');
   const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
-  const [cards, setCards] = useState<{ cardId: number; title: string; content: string; cardColor: string; date: string; userid: number; isEditing: boolean }[]>([]);
+  const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean }[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm); // สร้าง state แยกเพื่อใช้กับ debounce
   const titleInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/getCookie`);
-        setUserid(response.data.userId);
-      } catch (error) {
-        console.error('There was an error fetching the notes:', error);
-      }
-    };
-    fetchData();
-  }, []);
 
   function handleColorChange(color: string) {
     setCardColor(color);
@@ -48,15 +37,6 @@ export default function Home() {
     setIsPopupOpen(false);
   }
 
-  async function getNextId() {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/nextNoteId`);
-      return response.data.nextId;
-    } catch (error) {
-      console.error('There was an error fetching the notes:', error);
-    }
-  }
-
   async function handleSaveCard() {
     if (title.trim() === "") {
       Swal.fire({
@@ -67,28 +47,24 @@ export default function Home() {
       return;
     }
 
-    const newIs = await getNextId();
-    const newCard = {
-      noteid: newIs,
-      title: title,
-      content: content,
-      color: cardColor,
-      date: '',
-      userid: userid
-    };
-    setCards([
-      ...cards,
-      { cardId: newIs, title: title.trim(), content, cardColor, date, userid: userid, isEditing: false }
-    ]);
-    const fetchNotes = async (newIs: any) => {
-      try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/notes`, newCard);
-      } catch (error) {
-        console.error('There was an error fetching the notes:', error);
-      }
-    };
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/notes`, {
+        title: title,
+        content: content,
+        color: cardColor,
+        date: '',
+        userId: userId
+      });
 
-    fetchNotes(newIs);
+      const newIs = await response.data.noteId;
+      setCards([
+        ...cards,
+        { cardId: newIs, title: title.trim(), content, cardColor, date, userId: userId, isEditing: false }
+      ]);
+
+    } catch (error) {
+      console.error('There was an error fetching the notes:', error);
+    }
 
     setTitle("");
     setContent("");
@@ -96,17 +72,30 @@ export default function Home() {
     setIsPopupOpen(false);
   }
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/getCookie`);
+      return response.data.userId;
+    } catch (error) {
+      console.error('There was an error fetching the notes:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/notes/${userid}`);
+        const userId = await fetchData();
+        setUserId(userId);
+
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/notes/${userId}`);
+
         const fetchedCards = response.data.map((note: any) => ({
-          cardId: note.noteid,
+          cardId: note.noteId,
           title: note.title,
           content: note.content,
           cardColor: note.color,
           date: note.date,
-          userid: note.userid,
+          userId: note.userId,
           isEditing: false
         }));
         setCards(fetchedCards);
@@ -115,10 +104,10 @@ export default function Home() {
       }
     };
 
-    if (userid !== null) {
+    if (userId !== null) {
       fetchNotes();
     }
-  }, [userid]);
+  }, [userId]);
 
   useEffect(() => {
     if (isPopupOpen && titleInputRef.current) {
@@ -136,7 +125,7 @@ export default function Home() {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/removeCookie`);
       } catch (error) {
-        console.error('There was an error fetching the notes:', error);
+        console.error('There was an error logging out:', error);
       }
     };
     fetchData().then(() => {
@@ -144,22 +133,44 @@ export default function Home() {
     });
   }
 
-  const handleSearchChange = debounce((value:any) => {
-    setSearchTerm(value);
-  }, 300);
+  function handleDeleteCard(id: string) {
+    setCards(cards.filter(card => card.cardId !== id));
+  }
+
+  // ใช้ useEffect สำหรับ debounce เพื่อเลื่อนการค้นหา
+  useEffect(() => {
+    const debouncedHandler = debounce(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    debouncedHandler();
+
+    return () => {
+      debouncedHandler.cancel();
+    };
+  }, [searchTerm]);
 
   const filteredCards = useMemo(() => {
-    return cards.filter(card =>
-      card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      card.content.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    if (!searchTerm.trim()) {
+      return cards; // ถ้าไม่มีคำค้นหา ให้แสดงผลทั้งหมด
+    }
+
+    const searchLower = searchTerm.toLowerCase().trim(); // แปลงคำค้นหาเป็นตัวพิมพ์เล็กและลบช่องว่าง
+
+    return cards.filter((card) => {
+      // แปลง title และ content เป็นตัวพิมพ์เล็ก
+      const titleLower = card.title.toLowerCase();
+      const contentLower = card.content.toLowerCase();
+
+      // ตรวจสอบว่าคำค้นหา (searchTerm) อยู่ใน title หรือ content หรือไม่
+      return titleLower.includes(searchLower) || contentLower.includes(searchLower);
+    });
   }, [cards, searchTerm]);
 
-  function handleDeleteCard(id: number) {
-    setCards(cards.filter(card => card.cardId !== id));
-}
+
+
   return (
-<div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
       <button
         onClick={handleLogout}
         className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -169,32 +180,43 @@ export default function Home() {
 
       <h1 className="text-3xl font-bold mb-8 mt-12">Super Note</h1>
 
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => handleSearchChange(e.target.value)}
-        className="mb-6 p-2 border border-gray-300 rounded-lg w-2/3"
-        placeholder="Search cards by title or content"
-      />
+      <div className="relative mb-6 w-2/3">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg w-full"
+          placeholder="Search cards by title or content"
+        />
+        {searchTerm && (
+          <button
+            onClick={() => setSearchTerm('')} // เมื่อคลิกปุ่มจะเคลียร์ค่า searchTerm
+            className="absolute right-1 top-[12%] bg-gray-200 px-2 py-1 rounded"
+          >
+            Clear
+          </button>
+        )}
+      </div>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
-                {filteredCards.length > 0 ? (
-                    filteredCards.map((card, index) => (
-                        <Card
-                            key={index}
-                            cardId={card.cardId}
-                            title={card.title}
-                            content={card.content}
-                            cardColor={card.cardColor}
-                            date={card.date}
-                            userid={userid}
-                            onDelete={handleDeleteCard} // ส่งฟังก์ชัน handleDeleteCard ไปที่ Card
-                        />
-                    ))
-                ) : (
-                    <></>
-                )}
-            </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
+        {filteredCards.length > 0 ? (
+          filteredCards.map((card, index) => (
+            <Card
+              key={index}
+              cardId={card.cardId}
+              title={card.title}
+              content={card.content}
+              cardColor={card.cardColor}
+              date={card.date}
+              userId={userId}
+              onDelete={handleDeleteCard} // ส่งฟังก์ชัน handleDeleteCard ไปที่ Card
+            />
+          ))
+        ) : (
+          <p>No matching cards found</p>
+        )}
+      </div>
 
       <div className="fixed bottom-4 right-4">
         <Image

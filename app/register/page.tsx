@@ -10,11 +10,6 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  async function NextUserId() {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/nextUserId`);
-    return response.data.nextUserId;
-  }
-
   async function Register(e: any) {
     e.preventDefault(); // ป้องกันการโหลดหน้าใหม่
 
@@ -28,12 +23,8 @@ export default function Home() {
     }
 
     try {
-      // เรียกใช้ฟังก์ชันเพื่อสร้าง user ID ใหม่
-      const nextUserId = await NextUserId();
-
       // ส่งข้อมูลการสมัครไปที่ API และรอผลลัพธ์
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/register`, {
-        userid: nextUserId,
         email: email,
         password: password,
       });

@@ -2,6 +2,7 @@ const prisma = require('../prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // ใช้ require สำหรับ CommonJS
 const nodemailer = require("nodemailer");
+const { ObjectId } = require('mongodb');
 
 async function sendEmail(email, token) {
   const transporter = nodemailer.createTransport({
@@ -43,29 +44,37 @@ class NoteRepository {
     const formatter = new Intl.DateTimeFormat('en-GB', options);
     const formattedDate = formatter.format(now);
 
+    note.noteId = new ObjectId();
     note.date = formattedDate;
+
     return prisma.note.create({ data: note });
   }
 
-  async getNoteById(noteid) {
-    return prisma.note.findUnique({ where: { noteid: Number(noteid) } });
+  async getNoteById(noteId) {
+    return prisma.note.findUnique({ where: { noteId: noteId } });
   }
 
-  async getAllNotes(userid) {
-    const notes = await prisma.note.findMany({
-      where: {
-        userid: Number(userid),
-      },
-      orderBy: {
-        noteid: 'asc', // หรือ 'desc' ขึ้นอยู่กับความต้องการ
-      },
-    });
-    return notes;
+  async getAllNotes(userId) {
+    try {
+      const notes = await prisma.note.findMany({
+        where: {
+          userId: userId,
+        },
+        orderBy: {
+          noteId: 'asc', // หรือ 'desc' ขึ้นอยู่กับความต้องการ
+        },
+      });
+      return notes;
+    } catch (error) {
+      return "error"
+    }
+
+
   }
 
-  async updateNote(noteid, updatedNote) {
+  async updateNote(noteId, updatedNote) {
     return prisma.note.update({
-      where: { noteid: Number(noteid) },
+      where: { noteId: noteId },
       data: {
         title: updatedNote.title,
         content: updatedNote.content,
@@ -74,44 +83,12 @@ class NoteRepository {
     });
   }
 
-  async deleteNoteById(noteid) {
-    return prisma.note.delete({ where: { noteid: Number(noteid) } });
-  }
-
-  async getNextId() {
-    // หา noteid ที่มากที่สุด
-    const maxNote = await prisma.note.findFirst({
-      orderBy: {
-        noteid: 'desc',
-      },
-      select: {
-        noteid: true,
-      },
-    });
-
-    // ถ้าพบข้อมูล, เพิ่ม 1; ถ้าไม่พบ, ตั้งค่าเป็น 1
-    const nextNoteId = maxNote ? maxNote.noteid + 1 : 1;
-    return nextNoteId
-  }
-
-  async getNextUserId() {
-    // หา noteid ที่มากที่สุด
-    const maxUser = await prisma.user.findFirst({
-      orderBy: {
-        userid: 'desc',
-      },
-      select: {
-        userid: true,
-      },
-    });
-
-    // ถ้าพบข้อมูล, เพิ่ม 1; ถ้าไม่พบ, ตั้งค่าเป็น 1
-    const nextUserId = maxUser ? maxUser.userid + 1 : 1;
-    return nextUserId
+  async deleteNoteById(noteId) {
+    return prisma.note.delete({ where: { noteId: noteId } });
   }
 
   async createUserrr(userdata, res) {
-    const { userid, email, password } = userdata;
+    const { email, password } = userdata;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -134,7 +111,7 @@ class NoteRepository {
     // สร้างผู้ใช้ใหม่ในฐานข้อมูล
     const user = await prisma.user.create({
       data: {
-        userid: userid,
+        userId: new ObjectId(),  // กำหนดให้ userId เป็น ObjectId เดียวกับ id
         email: email,
         password: hashedPassword,
       },
@@ -165,7 +142,7 @@ class NoteRepository {
       throw new Error('Invalid email or password');
     }
 
-    const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     return token;
 
@@ -186,7 +163,7 @@ class NoteRepository {
       throw new Error('Invalid email');
     }
 
-    const token = jwt.sign({ userId: user.userid }, process.env.JWT_SECRET_CHANGE_PASSWORD, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET_CHANGE_PASSWORD, { expiresIn: '1h' });
 
     // -----------------------------------------------------------------------------------------------------------------------------
     const response = await sendEmail(user.email, token);
@@ -215,7 +192,7 @@ class NoteRepository {
 
       // ค้นหาผู้ใช้จาก userId
       const user = await prisma.user.findUnique({
-        where: { userid: userId }, // สมมติว่าในฐานข้อมูลใช้ 'id' เป็นคีย์หลัก
+        where: { userId: userId }, // สมมติว่าในฐานข้อมูลใช้ 'id' เป็นคีย์หลัก
       });
 
       if (!user) {
@@ -224,7 +201,7 @@ class NoteRepository {
 
       // เปลี่ยนรหัสผ่าน
       await prisma.user.update({
-        where: { userid: userId },
+        where: { userId: userId },
         data: {
           password: await bcrypt.hash(password, 10), // ใช้ bcrypt ในการเข้ารหัสรหัสผ่านใหม่
         },
