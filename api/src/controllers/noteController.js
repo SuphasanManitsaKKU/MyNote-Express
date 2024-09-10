@@ -1,4 +1,3 @@
-const { log } = require('console');
 const noteService = require('../services/noteService');
 
 class NoteController {

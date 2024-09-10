@@ -17,6 +17,7 @@ export default function Home() {
   const [date, setDate] = useState('2020-08-03');
   const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);  // ระบุชนิดของ ref ที่นี่
   const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean }[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm); // สร้าง state แยกเพื่อใช้กับ debounce
@@ -134,8 +135,17 @@ export default function Home() {
   }
 
   function handleDeleteCard(id: string) {
-    setCards(cards.filter(card => card.cardId !== id));
+    console.log('Deleting card with ID:', id);
+
+    // ใช้ prevState ในการอัพเดต state เพื่อแน่ใจว่า state ที่อัพเดตเป็นตัวล่าสุด
+    setCards(prevCards => prevCards.filter(card => card.cardId !== id));
+
+    // Log หลังจาก set state อาจไม่แสดง state ที่อัพเดตใหม่ทันทีเนื่องจาก setCards ทำงานแบบ asynchronous
+    console.log('Updated cards after deletion');
   }
+  useEffect(() => {
+    console.log('Cards have been updated', cards);
+  }, [cards]);
 
   // ใช้ useEffect สำหรับ debounce เพื่อเลื่อนการค้นหา
   useEffect(() => {
@@ -167,7 +177,16 @@ export default function Home() {
     });
   }, [cards, searchTerm]);
 
-
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    inputRef.current?.focus(); // ให้ focus กลับไปยัง input หลังจากเคลียร์ searchTerm
+  };
+  interface CardProps {
+    cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean
+  }
+  const handleUpdateCard = (updatedCard: CardProps) => {
+    setCards(prevCards => prevCards.map(card => card.cardId === updatedCard.cardId ? updatedCard : card));
+  };
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
@@ -187,10 +206,11 @@ export default function Home() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="p-2 border border-gray-300 rounded-lg w-full"
           placeholder="Search cards by title or content"
+          ref={inputRef}  // ผูก ref ไปยัง input
         />
         {searchTerm && (
           <button
-            onClick={() => setSearchTerm('')} // เมื่อคลิกปุ่มจะเคลียร์ค่า searchTerm
+            onClick={handleClearSearch} // ใช้ฟังก์ชัน handleClearSearch สำหรับการคลิก
             className="absolute right-1 top-[12%] bg-gray-200 px-2 py-1 rounded"
           >
             Clear
@@ -201,21 +221,23 @@ export default function Home() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
         {filteredCards.length > 0 ? (
-          filteredCards.map((card, index) => (
+          filteredCards.map((card) => (
             <Card
-              key={index}
+              key={card.cardId}
               cardId={card.cardId}
               title={card.title}
               content={card.content}
               cardColor={card.cardColor}
               date={card.date}
-              userId={userId}
-              onDelete={handleDeleteCard} // ส่งฟังก์ชัน handleDeleteCard ไปที่ Card
+              userId={card.userId}
+              onDelete={handleDeleteCard}
+              onUpdate={handleUpdateCard}
             />
           ))
         ) : (
           <p>No matching cards found</p>
         )}
+
       </div>
 
       <div className="fixed bottom-4 right-4">

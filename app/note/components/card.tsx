@@ -4,8 +4,19 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+interface CardProps {
+    cardId: string;
+    title: string;
+    content: string;
+    cardColor: string;
+    date: string;
+    userId: string;
+    isEditing: boolean;  // Ensure this property is included if required everywhere
+    onDelete: (id: string) => void;
+    onUpdate: (updatedCard: CardProps) => void;
+}
 
-export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userId: initialuserId, onDelete }: { cardId: string, title: string, content: string, cardColor: string, date: string, userId: string, onDelete: (id: string) => void }) {
+export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userId: initialuserId, onDelete, onUpdate }: { cardId: string, title: string, content: string, cardColor: string, date: string, userId: string, onDelete: (id: string) => void, onUpdate: (card: CardProps) => void }) {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
@@ -27,12 +38,29 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
 
     async function update() {
         try {
-
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`, {
                 title: title,
                 content: content,
                 color: selectedColor,
             });
+            const updatedCard: CardProps = {
+                cardId:initialCardId,
+                title,
+                content,
+                cardColor: selectedColor,
+                date, // This should already be part of your state or props
+                userId,
+                isEditing: false // Make sure to set a sensible default or current value
+                ,
+                onDelete: function (id: string): void {
+                    throw new Error('Function not implemented.');
+                },
+                onUpdate: function (updatedCard: CardProps): void {
+                    throw new Error('Function not implemented.');
+                }
+            };
+              onUpdate(updatedCard);
+              setIsEditing(false);
         } catch (error) {
             console.error('There was an error updating the note:', error);
         }
