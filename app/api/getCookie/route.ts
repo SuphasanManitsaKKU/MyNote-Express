@@ -14,6 +14,7 @@ const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET ?? ''; // Replace with you
 export async function GET() {
     // Retrieve the cookie
     const cookie = cookies().get('token');
+    console.info('Cookie:', cookie);
 
     const token = cookie ? cookie.value : null;
 

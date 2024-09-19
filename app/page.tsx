@@ -15,7 +15,7 @@ export default function Home() {
     console.log("email", email);
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/login`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/login`, {
         email: email,
         password: password,
       }, {

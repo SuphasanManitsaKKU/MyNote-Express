@@ -4,6 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import Link from "next/link";
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ export default function Home() {
 
     try {
       // ส่งข้อมูลการสมัครไปที่ API และรอผลลัพธ์
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/register`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/register`, {
         email: email,
         password: password,
       });
@@ -82,7 +83,8 @@ export default function Home() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-8">
+            <Link className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" href="/">Back</Link>
             <button
               className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"

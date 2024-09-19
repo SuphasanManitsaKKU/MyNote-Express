@@ -10,7 +10,7 @@ export default function Home() {
 
   async function Send() {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/forgotpassword`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/forgotpassword`, {
         email: email,
       });
       Swal.fire({

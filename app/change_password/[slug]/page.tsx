@@ -13,7 +13,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   async function Send() {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/changepassword`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/changepassword`, {
         token: token,
         password: password,
         confirmPassword: confirmPassword,

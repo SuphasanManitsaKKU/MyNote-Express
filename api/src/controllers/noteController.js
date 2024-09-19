@@ -2,8 +2,9 @@ const noteService = require('../services/noteService');
 
 class NoteController {
   async createNote(req, res) {
+    const { title, content, color, userId } = req.body
     try {
-      const note = await noteService.create(req.body);
+      const note = await noteService.createNote(title, content, color, userId);
       res.status(201).json(note);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -24,8 +25,9 @@ class NoteController {
   }
 
   async getAllNotes(req, res) {
+    const { userId } = req.params
     try {
-      const notes = await noteService.getAll(req.params.userId);
+      const notes = await noteService.getAll(userId);
       res.status(200).json(notes);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -33,85 +35,77 @@ class NoteController {
   }
 
   async updateNote(req, res) {
+    const { userId, noteId } = req.params
+    const { title, content, color } = req.body
+
     try {
-      const updatedNote = await noteService.update(req.params.noteid, req.body);
-      res.status(200).json(updatedNote);
+      const updatededNote = await noteService.update(userId, noteId, title, content, color);
+      res.status(200).json(updatededNote);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 
   async deleteNote(req, res) {
+    const { userId, noteId } = req.params
     try {
-      await noteService.delete(req.params.noteid);
+      await noteService.delete(userId, noteId);
       res.status(204).send();
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 
-  async getNextNoteId(req, res) {
-    try {
-      const getNextId = await noteService.getId();
-      res.status(200).json({ nextId: getNextId });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  };
-  async nextUserId(req, res) {
-    try {
-      const nextUserId = await noteService.getUserId();
-      res.status(200).json({ nextUserId: nextUserId });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  };
-
   async createUser(req, res) {
+    const { email, password } = req.body;
     try {
-      const newUser = await noteService.createUserr(req.body, res);
-      res.status(200).json(newUser);
+      const newUser = await noteService.createUserr(email, password);
+      res.status(200).json({massage: 'User created successfully'});
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   };
 
   async loginUser(req, res) {
+    const { email, password } = req.body
     try {
-      const token = await noteService.loginUser(req.body);
+      const token = await noteService.loginUser(email, password);
 
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None', // ต้องใช้ 'None' เพื่อให้คุกกี้ถูกส่งข้ามโดเมน
-        domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
-        maxAge: 3600000,
+        sameSite: 'None',
+        // domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
+        maxAge: 18000000 // 5 hours
       });
 
 
       res.status(200).json({ token });
     } catch (error) {
-      console.log("Login error:", error.message);
       res.status(400).json({ error: error.message });
     }
   }
 
   async forgotPassword(req, res) {
+    const { email } = req.body;
     try {
-      const status = await noteService.forgotPassword(req.body);
-      res.status(200).json({ status: status });
+      const status = await noteService.forgotPassword(email);
+      res.status(200).json({ massage: "sent email success" });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 
   async changepassword(req, res) {
+    const { token, password, confirmPassword } = req.body;
+
     try {
-      const status = await noteService.changepassword(req.body);
+      const status = await noteService.changepassword(token, password, confirmPassword);
       res.status(200).json({ status: status });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 }
+
 module.exports = new NoteController();

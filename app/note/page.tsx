@@ -49,12 +49,13 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/api/notes`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API}/notes`, {
         title: title,
         content: content,
         color: cardColor,
-        date: '',
         userId: userId
+      }, {
+        withCredentials: true
       });
 
       const newIs = await response.data.noteId;
@@ -75,7 +76,7 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/getCookie`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/getCookie`);
       return response.data.userId;
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
@@ -88,7 +89,11 @@ export default function Home() {
         const userId = await fetchData();
         setUserId(userId);
 
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/api/notes/${userId}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/notes/${userId}`,
+          {
+            withCredentials: true
+          }
+        );
 
         const fetchedCards = response.data.map((note: any) => ({
           cardId: note.noteId,
@@ -124,7 +129,7 @@ export default function Home() {
     });
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/removeCookie`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/removeCookie`);
       } catch (error) {
         console.error('There was an error logging out:', error);
       }

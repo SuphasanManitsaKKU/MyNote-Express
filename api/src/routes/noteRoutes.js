@@ -1,26 +1,26 @@
 const express = require('express');
 const noteController = require('../controllers/noteController');
+const authenticate = require('../middleware');
 
 const router = express.Router();
 try {
 
+    router.post('/login', noteController.loginUser);
+    router.post('/register', noteController.createUser);
+    router.post('/forgotpassword', noteController.forgotPassword);
+    router.post('/changepassword', noteController.changepassword);
+
+    router.use(authenticate);
 
     router.post('/notes', noteController.createNote);
     router.get('/notes/:userId', noteController.getAllNotes);
-    // router.get('/notes/:noteid', noteController.getNoteById);
-    router.put('/notes/:noteid', noteController.updateNote);
-    router.delete('/notes/:noteid', noteController.deleteNote);
 
-    // router.get('/nextNoteId', noteController.getNextNoteId);
-    // router.get('/nextUserId', noteController.nextUserId);
+    router.put('/notes/:userId/:noteId', noteController.updateNote); // แก้ไข note
+    router.delete('/notes/:userId/:noteId', noteController.deleteNote); // ลบ note
 
-    router.post('/login', noteController.loginUser); // เข้าสู่ระบบ
-    router.post('/register', noteController.createUser); // สร้างผู้ใช้
-    router.post('/forgotpassword', noteController.forgotPassword); // เข้าสู่ระบบ
-    router.post('/changepassword', noteController.changepassword); // เข้าสู่ระบบ
 }
 catch (error) {
-    console.log("hehe");
+    console.error(error);
 }
 
 module.exports = router;

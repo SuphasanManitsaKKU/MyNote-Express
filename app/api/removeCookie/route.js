@@ -9,7 +9,7 @@ export async function GET() {
     cookieNames.forEach(cookieName => {
         cookies().set(cookieName, '', {
             path: '/', // ตรวจสอบให้แน่ใจว่า path ตรงกัน
-            domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่า domain ตรงกัน
+            // domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่า domain ตรงกัน
             maxAge: 0, // ทำให้คุกกี้หมดอายุทันที
         });
     });

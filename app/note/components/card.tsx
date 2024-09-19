@@ -29,7 +29,9 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
 
     async function daleteNote() {
         try {
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`);
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API}/notes/${initialuserId}/${initialCardId}`,
+                { withCredentials: true }
+            );
             // window.location.reload(); // รีเฟรชหน้าเว็บ
         } catch (error) {
             console.error('There was an error deleting the note:', error);
@@ -38,13 +40,16 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
 
     async function update() {
         try {
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/api/notes/${initialCardId}`, {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/notes/${initialuserId}/${initialCardId}`, {
                 title: title,
                 content: content,
                 color: selectedColor,
+            }, {
+                withCredentials: true
             });
+
             const updatedCard: CardProps = {
-                cardId:initialCardId,
+                cardId: initialCardId,
                 title,
                 content,
                 cardColor: selectedColor,
@@ -59,8 +64,8 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                     throw new Error('Function not implemented.');
                 }
             };
-              onUpdate(updatedCard);
-              setIsEditing(false);
+            onUpdate(updatedCard);
+            setIsEditing(false);
         } catch (error) {
             console.error('There was an error updating the note:', error);
         }
