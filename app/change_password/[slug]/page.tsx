@@ -18,13 +18,14 @@ export default function Page({ params }: { params: { slug: string } }) {
         password: password,
         confirmPassword: confirmPassword,
       });
+
       Swal.fire({
         icon: 'success',
-        title: 'Success',
-        text: 'Please check your email to reset your password.',
-        confirmButtonColor: '#38bdf8', 
+        title: 'Password Changed',
+        text: 'Your password has been successfully changed.',
+        confirmButtonColor: '#38bdf8',
         customClass: {
-          confirmButton: 'text-white', 
+          confirmButton: 'text-white',
         }
       }).then(() => {
         router.push('/'); // ใช้ router navigation ที่ถูกต้อง
@@ -34,14 +35,15 @@ export default function Page({ params }: { params: { slug: string } }) {
       Swal.fire({
         icon: 'error',
         title: 'Failed',
-        text: 'Please check your email.',
-        confirmButtonColor: '#38bdf8', 
+        text: (error as any).response?.data?.error || 'There was an issue changing your password. Please try again.',
+        confirmButtonColor: '#38bdf8',
         customClass: {
-          confirmButton: 'text-white', 
+          confirmButton: 'text-white',
         }
       });
     }
   }
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
