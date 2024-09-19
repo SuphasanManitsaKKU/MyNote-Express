@@ -70,7 +70,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           </div>
           <div className="flex items-center justify-center">
             <button
-              className="btn custom-green hover:bg-green-700 bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="btn custom-green hover:bg-sky-700 bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
               onClick={Send}
             >
