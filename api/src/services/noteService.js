@@ -4,17 +4,13 @@ const jwt = require('jsonwebtoken'); // ใช้ require สำหรับ Com
 const sendEmail = require('../utils/sendEmail');
 
 class NoteService {
-  async createNote(title,content,color,userId) {
-    const note = await noteRepository.createNote(title,content,color,userId);
+  async createNote(title, content, color, userId) {
+    const note = await noteRepository.createNote(title, content, color, userId);
 
     if (!note) {
       throw new Error('Failed to create note');
     }
     return note
-  }
-
-  async getById(noteid) {
-    return noteRepository.getNoteById(noteid);
   }
 
   async getAll(userId) {
@@ -47,19 +43,11 @@ class NoteService {
   async delete(userId, noteId) {
     const check = await noteRepository.getNoteByUserId(userId);
 
-    
+
     if (!check) {
       throw new Error('Note not found');
     }
     return noteRepository.deleteNoteById(noteId);
-  }
-
-  async getId() {
-    return noteRepository.getNextId();
-  }
-
-  async getUserId() {
-    return noteRepository.getNextUserId();
   }
 
   async createUserr(email, password) {

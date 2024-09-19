@@ -11,19 +11,6 @@ class NoteController {
     }
   }
 
-  async getNoteById(req, res) {
-    try {
-      const note = await noteService.getById(req.params.noteid);
-      if (note) {
-        res.status(200).json(note);
-      } else {
-        res.status(404).json({ error: 'Note not found' });
-      }
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  }
-
   async getAllNotes(req, res) {
     const { userId } = req.params
     try {
@@ -60,7 +47,7 @@ class NoteController {
     const { email, password } = req.body;
     try {
       const newUser = await noteService.createUserr(email, password);
-      res.status(200).json({massage: 'User created successfully'});
+      res.status(200).json({message: 'User created successfully'});
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -80,7 +67,7 @@ class NoteController {
       });
 
 
-      res.status(200).json({ token });
+      res.status(200).json({ message: 'Login success' });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -90,7 +77,7 @@ class NoteController {
     const { email } = req.body;
     try {
       const status = await noteService.forgotPassword(email);
-      res.status(200).json({ massage: "sent email success" });
+      res.status(200).json({ message: "sent email success" });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

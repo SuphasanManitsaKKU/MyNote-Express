@@ -32,10 +32,6 @@ class NoteRepository {
     return createdNote;
   }
 
-  async getNoteById(noteId) {
-    return prisma.note.findUnique({ where: { noteId: noteId } });
-  }
-
   async getNoteByUserId(userId) {
     return prisma.note.findMany({ where: { userId: userId }
     });

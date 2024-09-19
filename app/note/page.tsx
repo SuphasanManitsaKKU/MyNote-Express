@@ -76,7 +76,7 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/getCookie`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/getCookie`);
       return response.data.userId;
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
@@ -129,7 +129,7 @@ export default function Home() {
     });
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/removeCookie`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/removeCookie`);
       } catch (error) {
         console.error('There was an error logging out:', error);
       }
