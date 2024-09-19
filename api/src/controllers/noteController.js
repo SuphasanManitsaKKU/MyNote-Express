@@ -50,7 +50,7 @@ class NoteController {
     const { userId, noteId } = req.params
     try {
       await noteService.delete(userId, noteId);
-      res.status(204).send();
+      res.status(200).json({ message: 'Note deleted successfully' });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
