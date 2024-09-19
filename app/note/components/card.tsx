@@ -75,6 +75,10 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
         event.stopPropagation();
         Swal.fire({
             title: "Do you want to delete this note?",
+            confirmButtonColor: '#38bdf8', 
+            customClass: {
+                confirmButton: 'text-white', 
+            },
             showDenyButton: true,
             showCancelButton: true,
             showConfirmButton: false,
@@ -85,6 +89,10 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                 Swal.fire({
                     icon: "success",
                     title: "Deleted",
+                    confirmButtonColor: '#38bdf8', 
+                    customClass: {
+                        confirmButton: 'text-white', 
+                    },
                     showConfirmButton: true,
                     timer: 1500
                 }).then(() => {

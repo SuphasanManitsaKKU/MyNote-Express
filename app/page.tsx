@@ -26,6 +26,10 @@ export default function Home() {
         icon: 'success',
         title: 'Login Successful',
         text: 'You have successfully logged in!',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       })
       .then(() => {
         router.push('/note'); // ใช้ router navigation ที่ถูกต้อง
@@ -39,6 +43,10 @@ export default function Home() {
         icon: 'error',
         title: 'Login Failed',
         text: 'Please check your email and password.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       });
     }
   }

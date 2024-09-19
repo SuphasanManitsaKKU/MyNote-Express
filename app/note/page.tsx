@@ -44,6 +44,10 @@ export default function Home() {
         icon: 'error',
         title: 'Oops...',
         text: 'Please enter a title for the card!',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       });
       return;
     }
@@ -126,6 +130,10 @@ export default function Home() {
       icon: 'success',
       title: 'Logged Out',
       text: 'You have successfully logged out!',
+      confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
     });
     const fetchData = async () => {
       try {

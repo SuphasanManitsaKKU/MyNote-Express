@@ -22,6 +22,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         icon: 'success',
         title: 'Success',
         text: 'Please check your email to reset your password.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       }).then(() => {
         router.push('/'); // ใช้ router navigation ที่ถูกต้อง
       });
@@ -31,6 +35,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         icon: 'error',
         title: 'Failed',
         text: 'Please check your email.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       });
     }
   }

@@ -19,6 +19,10 @@ export default function Home() {
         icon: 'warning',
         title: 'Warning',
         text: 'Please fill in all fields.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       });
       return;
     }
@@ -35,6 +39,10 @@ export default function Home() {
         icon: 'success',
         title: 'User Created',
         text: 'Your account has been successfully created!',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       }).then(() => {
         router.push('/'); // เปลี่ยนเส้นทางไปยังหน้าแรก
       });
@@ -46,6 +54,10 @@ export default function Home() {
         icon: 'error',
         title: 'Error',
         text: 'Failed to create account. Please try again.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       });
     }
   }

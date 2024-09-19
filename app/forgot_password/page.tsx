@@ -18,6 +18,10 @@ export default function Home() {
         icon: 'success',
         title: 'Success',
         text: 'Please check your email to reset your password.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       }).then(() => {
         router.push('/'); // ใช้ router navigation ที่ถูกต้อง
       });
@@ -26,6 +30,10 @@ export default function Home() {
         icon: 'error',
         title: 'Error',
         text: 'There was an error sending the email. Please try again later.',
+        confirmButtonColor: '#38bdf8', 
+        customClass: {
+          confirmButton: 'text-white', 
+        }
       });
     }
   }
