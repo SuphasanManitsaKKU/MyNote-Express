@@ -82,7 +82,7 @@ export default function Home() {
               Forgot Password?
             </Link>
             <button
-              className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="btn custom-green hover:bg-green-700 bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
               Login
