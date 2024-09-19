@@ -3,6 +3,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -49,8 +50,9 @@ export default function Home() {
               onChange={(e) => setEmail(e.target.value)} // จัดการกับการเปลี่ยนแปลงของฟิลด์อินพุต
             />
           </div>
-          <div className="flex items-center justify-center">
-            <button onClick={Send} className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+          <div className="flex items-center justify-between">
+            <Link className="text-sm text-sky-400 hover:text-sky-700" href="/">&larr; Back</Link>
+            <button onClick={Send} className="btn custom-green hover:bg-sky-700 bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
               Send
             </button>
           </div>

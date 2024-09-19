@@ -38,7 +38,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md">
-        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
           <div className="flex items-center justify-center">
             <h1 className="text-3xl font-bold mb-8">Change Password</h1>
           </div>
@@ -70,7 +70,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           </div>
           <div className="flex items-center justify-center">
             <button
-              className="btn custom-green hover:bg-green-600 bg-green-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="btn custom-green hover:bg-green-700 bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
               onClick={Send}
             >

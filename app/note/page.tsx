@@ -202,7 +202,7 @@ export default function Home() {
         Log Out
       </button>
 
-      <h1 className="text-3xl font-bold mb-8 mt-12">Super Note</h1>
+      <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
 
       <div className="relative mb-6 w-2/3">
         <input
@@ -312,7 +312,7 @@ export default function Home() {
                 </div>
                 <div className='flex justify-center items-center gap-4'>
                   <button onClick={handleClosePopup} className="text-gray-400">Cancel</button>
-                  <button onClick={handleSaveCard} className="bg-green-400 px-3 py-2 rounded-3xl">Create</button>
+                  <button onClick={handleSaveCard} className="bg-sky-400 hover:bg-sky-700 text-white px-3 py-2 rounded-3xl">Create</button>
                 </div>
               </div>
             </div>

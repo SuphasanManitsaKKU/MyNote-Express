@@ -45,7 +45,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8">Super Note</h1>
+      <h1 className="text-3xl font-bold mb-8">My Note</h1>
       <div className="w-full max-w-md">
         <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={Login}>
           <div className="mb-4">
@@ -75,14 +75,14 @@ export default function Home() {
             />
           </div>
           <div className="flex items-center justify-between">
-            <Link className="inline-block underline text-sm text-blue-500 hover:text-blue-800" href="./register">
+            <Link className="inline-block underline text-sm text-sky-400 hover:text-sky-700" href="./register">
               Register
             </Link>
-            <Link className="inline-block underline align-baseline text-sm text-gray-400 hover:text-blue-800" href="./forgot_password">
+            <Link className="inline-block underline align-baseline text-sm text-gray-400 hover:text-sky-700" href="./forgot_password">
               Forgot Password?
             </Link>
             <button
-              className="btn custom-green hover:bg-green-700 bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="btn custom-green hover:bg-sky-700 bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
               Login
