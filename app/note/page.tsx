@@ -108,7 +108,15 @@ export default function Home() {
           title: title.trim(),
           content: content,
           cardColor: cardColor,
-          date: new Date().toISOString(), // หรือใช้ฟิลด์วันที่จาก response
+          date: new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false, // ถ้าคุณต้องการใช้เวลาแบบ 24 ชั่วโมง
+            timeZone: 'Asia/Bangkok', // ตั้งค่าโซนเวลาเป็นประเทศไทย
+          }).format(new Date()), // แปลงฟอร์แมตของวันที่
           status: status,
           notificationTimeStatus: notificationTimeStatus,
           notificationTime: new Date(notificationTime), // แปลงเป็น Date object ก่อนเก็บ
@@ -116,6 +124,7 @@ export default function Home() {
           isEditing: false
         }
       ]);
+      
 
     } catch (error) {
       console.error('There was an error fetching the notes:', error);

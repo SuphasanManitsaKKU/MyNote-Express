@@ -15,11 +15,11 @@ class NoteService {
 
   async getAll(userId) {
     const notes = await noteRepository.getAllNotes(userId);
-
+  
     if (!notes || notes.length === 0) {
       throw new Error('No notes found');
     }
-
+  
     // ตั้งค่าฟอร์แมตวันที่
     const options = {
       timeZone: 'Asia/Bangkok',
@@ -29,18 +29,24 @@ class NoteService {
       hour: '2-digit',
       minute: '2-digit',
     };
-
+  
     // ใช้ `Intl.DateTimeFormat` เพื่อแปลง `date` เป็นรูปแบบที่ต้องการ
     const formattedNotes = notes.map(note => {
-      const formattedDate = new Intl.DateTimeFormat('en-GB', options).format(new Date(note.date));
+      const noteDate = new Date(note.date);
+  
+      // ลบ 7 ชั่วโมง
+      noteDate.setHours(noteDate.getHours() - 7);
+  
+      // ฟอร์แมตวันที่ตาม timezone Asia/Bangkok
+      const formattedDate = new Intl.DateTimeFormat('en-GB', options).format(noteDate);
       return {
         ...note,
         date: formattedDate // แปลงฟิลด์ date ให้เป็นฟอร์แมตใหม่
       };
     });
-
+  
     return formattedNotes;
-  }
+  }  
 
   async update(userId, noteId, title, content, color, status, notificationTimeStatus, notificationTime) {
 
