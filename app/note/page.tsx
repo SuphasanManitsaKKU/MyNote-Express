@@ -15,6 +15,7 @@ export default function Home() {
   const [content, setContent] = useState("");
   const [cardColor, setCardColor] = useState('bg-white');
   const [date, setDate] = useState('2020-08-03');
+
   const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTime, setNotificationTime] = useState(
@@ -42,6 +43,8 @@ export default function Home() {
     setTitle("");
     setContent("");
     setCardColor('bg-white');
+    setStatus(false);
+    setNotificationTimeStatus(false);
     setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
@@ -132,6 +135,8 @@ export default function Home() {
     setTitle("");
     setContent("");
     setCardColor('bg-white');
+    setStatus(false);
+    setNotificationTimeStatus(false);
     setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
@@ -359,7 +364,7 @@ export default function Home() {
                       <input
                         type="datetime-local"
                         id="notificationTime"
-                        value={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
+                        value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
                         min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
                         onChange={(e) => {
                           setNotificationTime(e.target.value)
