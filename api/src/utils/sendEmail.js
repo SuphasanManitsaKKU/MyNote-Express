@@ -45,7 +45,6 @@ async function sendEmail_v2(email, text) {
             html: `
                 <b>Reminder</b><br>
                 <p>${text}</p><br>
-                <p>Please make sure to take action on this.</p>
             `
         });
         return 1;
