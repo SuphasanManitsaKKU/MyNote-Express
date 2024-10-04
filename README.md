@@ -20,6 +20,8 @@ Run API:
 cd .\api
 nodemon .\src\index.js
 ```
+open another terminal
+
 Run NextJS:
 ```bash
 npm run dev
