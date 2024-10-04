@@ -5,13 +5,23 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, run the development server:
 
 ```bash
+cd .\api\docker
+docker compose up -d mongo6
+cd ..
+npm install express @prisma/client
+npx prisma generate
+npm i
+cd ..
+npm i
+```
+Run API:
+```bash
+cd .\api
+nodemon .\src\index.js
+```
+Run NextJS:
+```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
