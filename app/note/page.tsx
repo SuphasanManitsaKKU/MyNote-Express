@@ -124,7 +124,6 @@ export default function Home() {
           isEditing: false
         }
       ]);
-      
 
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
