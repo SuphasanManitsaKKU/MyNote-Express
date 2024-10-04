@@ -35,7 +35,7 @@ cron.schedule('* * * * *', async () => {
             minute: '2-digit',
             timeZone: 'Asia/Bangkok', // Thailand timezone
         });
-        console.log('Current Thai time:', currentDateTime);
+
         
         // Check each note
         notesWithNotifications.forEach(async (note) => {
@@ -51,6 +51,9 @@ cron.schedule('* * * * *', async () => {
                 minute: '2-digit',
                 timeZone: 'Asia/Bangkok', // Thailand timezone
             });
+            console.log('formattedNotificationDateTime:', formattedNotificationDateTime);
+            console.log('currentDateTime:', currentDateTime);
+            
 
             // If current date and time matches notification time, send an email
             if (formattedNotificationDateTime === currentDateTime) {
