@@ -2,10 +2,11 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+Init Project:
 
 ```bash
-cd .\api\docker
+git clone https://github.com/SuphasanManitsaKKU/SuperNote.git
+cd SuperNote\api\docker
 docker compose up -d mongo6
 cd ..
 npm install express @prisma/client
