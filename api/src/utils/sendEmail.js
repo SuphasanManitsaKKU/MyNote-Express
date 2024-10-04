@@ -25,4 +25,38 @@ async function sendEmail(email, token) {
     }
 }
 
-module.exports = sendEmail;
+async function sendEmail_v2(email, text) {
+    const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com", // SMTP server for Gmail
+        port: 465,
+        secure: true, // Use `true` for port 465, `false` for other ports
+        auth: {
+            user: "suphasan.m@kkumail.com", // Your email address
+            pass: "qbji nsrg mtoz skgz", // Your email password or app-specific password
+        },
+    });
+
+    try {
+        const info = await transporter.sendMail({
+            from: 'suphasan.m@kkumail.com', // Sender address
+            to: `${email}`, // List of receivers
+            subject: "Reminder Notification", // หัวเรื่องของอีเมลที่เหมาะสม
+            text: "This is a reminder for an important event.", // ข้อความแจ้งเตือน
+            html: `
+                <b>Reminder</b><br>
+                <p>${text}</p><br>
+                <p>Please make sure to take action on this.</p>
+            `
+        });
+        return 1;
+    } catch (error) {
+        console.log(error);
+        return 0;
+    }
+}
+
+
+module.exports = {
+    sendEmail,
+    sendEmail_v2
+};

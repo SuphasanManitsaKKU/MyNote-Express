@@ -15,10 +15,16 @@ export default function Home() {
   const [content, setContent] = useState("");
   const [cardColor, setCardColor] = useState('bg-white');
   const [date, setDate] = useState('2020-08-03');
+  const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
+  const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
+  const [notificationTime, setNotificationTime] = useState(
+    new Date().toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
+  );
   const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);  // ระบุชนิดของ ref ที่นี่
-  const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean }[]>([]);
+  const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; status: boolean; notificationTimeStatus: boolean; notificationTime: Date; userId: string; isEditing: boolean }[]>([]);
+
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm); // สร้าง state แยกเพื่อใช้กับ debounce
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -35,10 +41,37 @@ export default function Home() {
   function handleClosePopup() {
     setTitle("");
     setContent("");
+    setCardColor('bg-white');
+    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
   async function handleSaveCard() {
+    let selectedDateTime = new Date(notificationTime);
+
+    if (notificationTimeStatus && notificationTime) {
+
+      // Add 7 hours to the selectedDateTime
+      selectedDateTime.setHours(selectedDateTime.getHours() + 7);
+
+      const currentDateTime = new Date();
+
+      // ถ้าผู้ใช้เลือกวันเวลาในอดีต
+      if (selectedDateTime < currentDateTime) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Notification time cannot be in the past. Please choose a future time.',
+          confirmButtonColor: '#38bdf8',
+          customClass: {
+            confirmButton: 'text-white',
+          },
+        });
+        return; // หยุดการทำงานถ้าพบว่าเป็นเวลาในอดีต
+      }
+    }
+
+
     if (title.trim() === "") {
       Swal.fire({
         icon: 'error',
@@ -57,15 +90,31 @@ export default function Home() {
         title: title,
         content: content,
         color: cardColor,
+        status: status,
+        notificationTimeStatus: notificationTimeStatus,
+        notificationTime: new Date(selectedDateTime).toISOString(), // ส่งเป็น ISO string ไปยัง backend
         userId: userId
       }, {
         withCredentials: true
       });
 
-      const newIs = await response.data.noteId;
+      const newId = await response.data.noteId;
+
+      // แปลง notificationTime จาก string เป็น Date object ก่อนเก็บใน state
       setCards([
         ...cards,
-        { cardId: newIs, title: title.trim(), content, cardColor, date, userId: userId, isEditing: false }
+        {
+          cardId: newId,
+          title: title.trim(),
+          content: content,
+          cardColor: cardColor,
+          date: new Date().toISOString(), // หรือใช้ฟิลด์วันที่จาก response
+          status: status,
+          notificationTimeStatus: notificationTimeStatus,
+          notificationTime: new Date(notificationTime), // แปลงเป็น Date object ก่อนเก็บ
+          userId: userId,
+          isEditing: false
+        }
       ]);
 
     } catch (error) {
@@ -75,8 +124,11 @@ export default function Home() {
     setTitle("");
     setContent("");
     setCardColor('bg-white');
+    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
+
+
 
   const fetchData = async () => {
     try {
@@ -105,9 +157,15 @@ export default function Home() {
           content: note.content,
           cardColor: note.color,
           date: note.date,
+
+          status: note.status,
+          notificationTimeStatus: note.notificationTimeStatus,
+          notificationTime: note.notificationTime,
+
           userId: note.userId,
           isEditing: false
         }));
+
         setCards(fetchedCards);
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
@@ -148,16 +206,12 @@ export default function Home() {
   }
 
   function handleDeleteCard(id: string) {
-    console.log('Deleting card with ID:', id);
 
     // ใช้ prevState ในการอัพเดต state เพื่อแน่ใจว่า state ที่อัพเดตเป็นตัวล่าสุด
     setCards(prevCards => prevCards.filter(card => card.cardId !== id));
 
-    // Log หลังจาก set state อาจไม่แสดง state ที่อัพเดตใหม่ทันทีเนื่องจาก setCards ทำงานแบบ asynchronous
-    console.log('Updated cards after deletion');
   }
   useEffect(() => {
-    console.log('Cards have been updated', cards);
   }, [cards]);
 
   // ใช้ useEffect สำหรับ debounce เพื่อเลื่อนการค้นหา
@@ -198,7 +252,11 @@ export default function Home() {
     cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean
   }
   const handleUpdateCard = (updatedCard: CardProps) => {
-    setCards(prevCards => prevCards.map(card => card.cardId === updatedCard.cardId ? updatedCard : card));
+    setCards(prevCards => prevCards.map(card =>
+      card.cardId === updatedCard.cardId
+        ? { ...card, ...updatedCard }
+        : card
+    ));
   };
 
   return (
@@ -242,6 +300,11 @@ export default function Home() {
               content={card.content}
               cardColor={card.cardColor}
               date={card.date}
+
+              status={card.status}
+              notificationTimeStatus={card.notificationTimeStatus}
+              notificationTime={card.notificationTime}
+
               userId={card.userId}
               onDelete={handleDeleteCard}
               onUpdate={handleUpdateCard}
@@ -269,6 +332,39 @@ export default function Home() {
             className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105`}>
             <div className='flex flex-col h-full'>
               <div className='flex-grow'>
+                {/* Checkbox สำหรับเลือกเปิด/ปิด Notification Time */}
+                <div className='flex justify-between items-center min-h-12'>
+                  <div className='flex justify-center items-center gap-2'>
+                    <input
+                      type="checkbox"
+                      id="notificationTimeStatus"
+                      checked={notificationTimeStatus}
+                      onChange={() => setNotificationTimeStatus(!notificationTimeStatus)} // สลับค่าของ notificationTimeStatus
+                      className="h-4 w-4"
+                    />
+                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
+                      Enable Notification Time
+                    </label>
+                  </div>
+                  {notificationTimeStatus && (
+                    <div className='flex justify-center items-center gap-2'>
+                      <input
+                        type="datetime-local"
+                        id="notificationTime"
+                        value={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
+                        min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
+                        onChange={(e) => {
+                          setNotificationTime(e.target.value)
+                        }} // เก็บค่าที่ผู้ใช้เลือกใน state
+                        className="p-2 border border-gray-300 rounded-lg"
+                      />
+                    </div>
+
+
+                  )}
+                </div>
+
+                {/* Title Input */}
                 <input
                   ref={titleInputRef}
                   type="text"
@@ -278,6 +374,8 @@ export default function Home() {
                   placeholder="Title"
                 />
                 <hr />
+
+                {/* Content Textarea */}
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
@@ -285,7 +383,9 @@ export default function Home() {
                   placeholder="Content"
                 />
               </div>
-              <div className='flex justify-between items-center mt-2'>
+
+              <div className='flex justify-between items-center mt-4'>
+                {/* Color Picker */}
                 <div className='flex gap-2 border p-2 rounded-2xl bg-white'>
                   <button
                     className={`w-6 h-6 rounded-full border ${selectedColor === 'bg-white' ? 'border-black' : ''} bg-white`}
@@ -318,6 +418,8 @@ export default function Home() {
                     aria-label="Light Gray"
                   />
                 </div>
+
+                {/* Create and Cancel Buttons */}
                 <div className='flex justify-center items-center gap-4'>
                   <button onClick={handleClosePopup} className="text-gray-400">Cancel</button>
                   <button onClick={handleSaveCard} className="bg-sky-400 hover:bg-sky-700 text-white px-3 py-2 rounded-3xl">Create</button>
@@ -327,6 +429,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+
+
     </div>
   );
 }

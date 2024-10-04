@@ -2,9 +2,9 @@ const noteService = require('../services/noteService');
 
 class NoteController {
   async createNote(req, res) {
-    const { title, content, color, userId } = req.body
+    const { title, content, color, status, notificationTimeStatus, notificationTime, userId } = req.body
     try {
-      const note = await noteService.createNote(title, content, color, userId);
+      const note = await noteService.createNote(title, content, color, status, notificationTimeStatus, notificationTime, userId);
       res.status(201).json(note);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -23,10 +23,10 @@ class NoteController {
 
   async updateNote(req, res) {
     const { userId, noteId } = req.params
-    const { title, content, color } = req.body
+    const { title, content, color, status, notificationTimeStatus, notificationTime } = req.body
 
     try {
-      const updatededNote = await noteService.update(userId, noteId, title, content, color);
+      const updatededNote = await noteService.update(userId, noteId, title, content, color, status, notificationTimeStatus, notificationTime);
       res.status(200).json(updatededNote);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -47,7 +47,7 @@ class NoteController {
     const { email, password } = req.body;
     try {
       const newUser = await noteService.createUserr(email, password);
-      res.status(200).json({message: 'User created successfully'});
+      res.status(200).json({ message: 'User created successfully' });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

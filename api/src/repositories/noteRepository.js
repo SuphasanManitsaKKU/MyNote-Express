@@ -2,27 +2,23 @@ const prisma = require('../prisma/client');
 const { ObjectId } = require('mongodb');
 
 class NoteRepository {
-  async createNote(title, content, color, userId) {
+  async createNote(title, content, color, status, notificationTimeStatus, notificationTime, userId) {
     const now = new Date();
-    const options = {
-      timeZone: 'Asia/Bangkok',
-      hour: '2-digit',
-      minute: '2-digit',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    };
-    const formatter = new Intl.DateTimeFormat('en-GB', options);
-    const date = formatter.format(now);
+    now.setHours(now.getHours() + 7);
+
+
     const noteId = new ObjectId();
 
     const note = {
-      noteId: noteId,
+      noteId: noteId.toString(), // noteId เก็บเป็น String
       title: title,
       content: content,
       color: color,
-      userId: userId,
-      date: date,
+      userId: userId, // userId ต้องเป็น ObjectId ที่แปลงเป็น string เช่นกัน
+      date: now, // บันทึกเวลาปัจจุบันในรูปแบบ Date object
+      status: status, // ค่าเริ่มต้น
+      notificationTimeStatus: notificationTimeStatus, // หรือค่าที่ตั้งไว้
+      notificationTime: notificationTime, // ค่าเริ่มต้นเป็นพรุ่งนี้เวลา 00:00
     };
 
     const createdNote = await prisma.note.create({
@@ -33,7 +29,8 @@ class NoteRepository {
   }
 
   async getNoteByUserId(userId) {
-    return prisma.note.findMany({ where: { userId: userId }
+    return prisma.note.findMany({
+      where: { userId: userId }
     });
   }
 
@@ -48,31 +45,53 @@ class NoteRepository {
     });
   }
 
-  async updateNote(noteId, title, content, color) {
+  async updateNote(noteId, title, content, color, status, notificationTimeStatus, notificationTime) {
     return prisma.note.update({
       where: { noteId: noteId },
       data: {
         title: title,
         content: content,
         color: color,
+        status: status, // อัปเดตสถานะ
+        notificationTimeStatus: notificationTimeStatus, // อัปเดตสถานะการแจ้งเตือน
+        notificationTime: notificationTime, // อัปเดตเวลาแจ้งเตือน
       },
     });
   }
+
 
   async deleteNoteById(noteId) {
     return prisma.note.delete({ where: { noteId: noteId } });
   }
 
   async createUser(email, password) {
-    const user = await prisma.user.create({
+
+    let user; // ประกาศตัวแปร user ที่ระดับสูงกว่า
+
+    user = await prisma.user.create({
       data: {
-        userId: new ObjectId(),  // กำหนดให้ userId เป็น ObjectId เดียวกับ id
+        userId: new ObjectId().toString(),
         email: email,
         password: password,
       },
     });
-    // ส่ง response กลับไปพร้อมข้อมูลของผู้ใช้ใหม่
-    return user;
+
+
+    let updatedUser; // ประกาศตัวแปร updatedUser ที่ระดับสูงกว่า
+
+    // จากนั้นทำการอัปเดต userId ให้เท่ากับ _id
+    updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        userId: user.id, // อัปเดต userId ให้เท่ากับ _id ที่เพิ่งถูกสร้าง
+      },
+    });
+
+
+    // ส่ง response กลับไปพร้อมข้อมูลของผู้ใช้ที่ถูกอัปเดต
+    return updatedUser;
   }
 
   async loginUser(email) {
@@ -100,6 +119,17 @@ class NoteRepository {
   async getUserById(userId) {
     return prisma.user.findUnique({ where: { userId: userId } });
   }
-}
 
+  async getNotesWithNotification() {
+    return prisma.note.findMany({
+      where: {
+        notificationTimeStatus: true,
+      },
+      include: {
+        user: true, // ดึงข้อมูล user ที่เชื่อมโยงกับ note
+      },
+    });
+  }
+
+}
 module.exports = new NoteRepository();

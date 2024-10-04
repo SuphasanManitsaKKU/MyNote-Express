@@ -4,24 +4,65 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { set } from 'date-fns';
 interface CardProps {
     cardId: string;
     title: string;
     content: string;
     cardColor: string;
     date: string;
+    status: boolean;
+    notificationTimeStatus: boolean;
+    notificationTime: Date;
     userId: string;
     isEditing: boolean;  // Ensure this property is included if required everywhere
     onDelete: (id: string) => void;
     onUpdate: (updatedCard: CardProps) => void;
 }
 
-export default function Card({ cardId: initialCardId, title: initialTitle, content: initialContent, cardColor: initialCardColor, date: initialDate, userId: initialuserId, onDelete, onUpdate }: { cardId: string, title: string, content: string, cardColor: string, date: string, userId: string, onDelete: (id: string) => void, onUpdate: (card: CardProps) => void }) {
+export default function Card(
+    { cardId: initialCardId,
+        title: initialTitle,
+        content: initialContent,
+        cardColor: initialCardColor,
+        date: initialDate,
+
+        status: initialStatus,
+        notificationTimeStatus: initialNotificationTimeStatus,
+        notificationTime: initialNotification,
+
+        userId: initialuserId,
+        onDelete,
+        onUpdate
+    }: {
+        cardId: string,
+        title: string,
+        content: string,
+        cardColor: string,
+        date: string,
+
+        status: boolean,
+        notificationTimeStatus: boolean,
+        notificationTime: Date,
+
+        userId: string,
+        onDelete: (id: string) => void,
+        onUpdate: (card: CardProps) => void
+    }) {
+
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
     const [cardColor, setCardColor] = useState(initialCardColor);
     const [date, setDate] = useState(initialDate);
+
+    const [status, setStatus] = useState(initialStatus);
+    const [notificationTimeStatus, setNotificationTimeStatus] = useState(initialNotificationTimeStatus);
+    const [notificationTime, setNotificationTime] = useState(
+        typeof initialNotification === 'string' ? new Date(initialNotification) : initialNotification
+    );
+
+
     const [userId, setUserid] = useState(initialuserId);
     const [selectedColor, setSelectedColor] = useState(initialCardColor);
 
@@ -38,12 +79,42 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
         }
     }
 
-    async function update() {
+    async function updateStatus(event: React.MouseEvent) {
+        event.stopPropagation();
+        setStatus(!status);
+
         try {
+            // Clone and add 7 hours to the notificationTime
+            let updatedNotificationTime = new Date(notificationTime);
+            updatedNotificationTime.setHours(updatedNotificationTime.getHours() + 7);
+
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/notes/${initialuserId}/${initialCardId}`, {
                 title: title,
                 content: content,
                 color: selectedColor,
+                status: !status,
+                notificationTimeStatus: notificationTimeStatus,
+                notificationTime: updatedNotificationTime, // ส่งค่าที่เพิ่ม 7 ชั่วโมงแล้ว
+            }, {
+                withCredentials: true
+            });
+        } catch (error) {
+            console.error('There was an error updating the note:', error);
+        }
+    }
+
+    async function update() {
+        try {
+            // Clone the notificationTime and add 7 hours
+            const updatedNotificationTime = new Date(notificationTime.getTime() + 7 * 60 * 60 * 1000);
+
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API}/notes/${initialuserId}/${initialCardId}`, {
+                title: title,
+                content: content,
+                color: selectedColor,
+                status: status,
+                notificationTimeStatus: notificationTimeStatus,
+                notificationTime: updatedNotificationTime.toISOString() // แปลงเป็น ISO string ก่อนส่ง
             }, {
                 withCredentials: true
             });
@@ -54,6 +125,9 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                 content,
                 cardColor: selectedColor,
                 date, // This should already be part of your state or props
+                status,
+                notificationTimeStatus,
+                notificationTime: notificationTime, // ใช้เวลาใหม่ที่บวกไป 7 ชั่วโมง
                 userId,
                 isEditing: false // Make sure to set a sensible default or current value
                 ,
@@ -64,12 +138,14 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                     throw new Error('Function not implemented.');
                 }
             };
+
             onUpdate(updatedCard);
             setIsEditing(false);
         } catch (error) {
             console.error('There was an error updating the note:', error);
         }
     }
+
 
     async function handleDelete(event: React.MouseEvent) {
         event.stopPropagation();
@@ -148,6 +224,14 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 overflow-hidden text-ellipsis whitespace-nowrap">{title}</h2>
                         <hr className="mb-4 border-black" />
                         <p className="text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">{content}</p>
+                        <input
+                            className='delete-btn absolute top-4 right-4'
+                            type="checkbox"
+                            checked={status}
+                            onClick={updateStatus}
+                            readOnly
+                        />
+
                         <div className='delete-btn absolute bottom-4 right-4'>
                             <Image
                                 width={25}
@@ -161,6 +245,40 @@ export default function Card({ cardId: initialCardId, title: initialTitle, conte
                 ) : (
                     <div className='flex flex-col h-full'>
                         <div className='flex-grow'>
+                            {/* Checkbox สำหรับเลือกเปิด/ปิด Notification Time */}
+                            <div className='flex justify-between items-center min-h-12'>
+                                <div className='flex justify-center items-center gap-2'>
+                                    <input
+                                        type="checkbox"
+                                        id="notificationTimeStatus"
+                                        checked={notificationTimeStatus}
+                                        onChange={() => setNotificationTimeStatus(!notificationTimeStatus)} // สลับค่าของ notificationTimeStatus
+                                        className="h-4 w-4"
+                                    />
+                                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
+                                        Enable Notification Time
+                                    </label>
+                                </div>
+                                {notificationTimeStatus && (
+                                    <div className='flex justify-center items-center gap-2'>
+                                        <input
+                                            type="datetime-local"
+                                            id="notificationTime"
+                                            value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
+                                            min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
+                                            onChange={(e) => {
+                                                setNotificationTime(new Date(e.target.value))
+                                            }} // เก็บค่าที่ผู้ใช้เลือกใน state
+                                            className="p-2 border border-gray-300 rounded-lg"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            <input className='delete-btn absolute top-4 right-4'
+                                type="checkbox"
+                                checked={status}
+                                onChange={(e) => setStatus(e.target.checked)}
+                            />
                             <div className='grid grid-cols-[3fr_1fr] gap-4 items-center'>
                                 <input
                                     type="text"

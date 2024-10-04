@@ -17,17 +17,19 @@ model User {
 }
 
 model Note {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  noteId  String @unique @db.ObjectId
-  title   String
-  content String
-  color   String
-  date    String
-  userId  String @db.ObjectId
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  noteId                 String   @unique @db.ObjectId
+  title                  String
+  content                String
+  color                  String
+  date                   DateTime
+  status                 Boolean
+  notificationTimeStatus Boolean
+  notificationTime       DateTime
+  userId                 String   @db.ObjectId
 
   user User @relation(fields: [userId], references: [id]) // ความสัมพันธ์กับ User
 }
 
 // npm install express @prisma/client
 // npx prisma generate
-//
