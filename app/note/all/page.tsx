@@ -324,7 +324,7 @@ export default function Home() {
 
         <Link
           href="/note"
-          className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400"
+          className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
         >
           <FontAwesomeIcon icon={faCircle} className='pe-1' />
           Uncompleted
