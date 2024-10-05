@@ -166,19 +166,19 @@ export default function Home() {
         );
 
         const fetchedCards = response.data
-        .filter((note: any) => note.status === false)  // กรอง status เป็น false
-        .map((note: any) => ({
-          cardId: note.noteId,
-          title: note.title,
-          content: note.content,
-          cardColor: note.color,
-          date: note.date,
-          status: note.status,
-          notificationTimeStatus: note.notificationTimeStatus,
-          notificationTime: note.notificationTime,
-          userId: note.userId,
-          isEditing: false
-        }));
+          .filter((note: any) => note.status === false)  // กรอง status เป็น false
+          .map((note: any) => ({
+            cardId: note.noteId,
+            title: note.title,
+            content: note.content,
+            cardColor: note.color,
+            date: note.date,
+            status: note.status,
+            notificationTimeStatus: note.notificationTimeStatus,
+            notificationTime: note.notificationTime,
+            userId: note.userId,
+            isEditing: false
+          }));
 
         setCards(fetchedCards);
       } catch (error) {
@@ -293,7 +293,7 @@ export default function Home() {
       </button>
 
       <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
-      
+
       <div className="relative mb-6 w-2/3">
         <input
           type="text"
@@ -314,27 +314,34 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center items-center w-full px-4">
-      <Link 
-        href="/note" 
-        className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400
-        "
-      >
-        <FontAwesomeIcon icon={faCircle} className='pe-1' />
-        Uncompleted
-      </Link>
+      <Link
+          href="/note/all"
+          className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400"
+        >
+          <FontAwesomeIcon icon={faCircle} className='pe-1' />
+          All
+        </Link>
 
-      <Link 
-        href="/note/archive" 
-        className="flex-1 px-4 py-2 text-center  transition duration-300 text-black hover:text-gray-500"
-      >
-        <FontAwesomeIcon icon={faCircleCheck} className='pe-1' />   
-        Completed
-      </Link>
-    </div>
+        <Link
+          href="/note"
+          className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400"
+        >
+          <FontAwesomeIcon icon={faCircle} className='pe-1' />
+          Uncompleted
+        </Link>
 
-<div className="px-8 mb-2 w-full"> 
-    <hr className="border border-gray-300" />
-</div>
+        <Link
+          href="/note/archive"
+          className="flex-1 px-4 py-2 text-center  transition duration-300 text-black hover:text-gray-500"
+        >
+          <FontAwesomeIcon icon={faCircleCheck} className='pe-1' />
+          Completed
+        </Link>
+      </div>
+
+      <div className="px-8 mb-2 w-full">
+        <hr className="border border-gray-300" />
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
         {filteredCards.length > 0 ? (
