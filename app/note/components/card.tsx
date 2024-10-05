@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { set } from 'date-fns';
-import ToggleSwitch from './toggleswicth';
 
 interface CardProps {
     cardId: string;
