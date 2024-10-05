@@ -128,8 +128,9 @@ export default function Home() {
           userId: userId,
           isEditing: false
         },
-        ...cards
+        ...cards // นำการ์ดใหม่มาไว้ที่ตำแหน่งแรก
       ]);
+
 
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
