@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { set } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {  faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
 
 interface CardProps {
     cardId: string;
@@ -111,7 +111,7 @@ export default function Card(
             content,
             cardColor: selectedColor,
             date, // This should already be part of your state or props
-            status : !status,
+            status: !status,
             notificationTimeStatus,
             notificationTime: notificationTime, // ใช้เวลาใหม่ที่บวกไป 7 ชั่วโมง
             userId,
@@ -290,37 +290,37 @@ export default function Card(
                         <div className='flex-grow'>
                             {/* Checkbox สำหรับเลือกเปิด/ปิด Notification Time */}
                             <div className='flex justify-between items-center min-h-12'>
-                            <div className='flex justify-center items-center gap-2'>
-                    <input
-                      type="checkbox"
-                      id="notificationTimeStatus"
-                      className="hidden"
-                      checked={notificationTimeStatus}
-                      onChange={() => setNotificationTimeStatus(!notificationTimeStatus)}
-                    />
-                    <label
-                      htmlFor="notificationTimeStatus"
-                      className={`relative block w-[60px] h-[30px] rounded-full cursor-pointer transition duration-300 ${notificationTimeStatus ? 'bg-red-600' : 'bg-[#ebebeb]'}`}
-                    >
-                      <div className={`absolute w-[24px] h-[24px] top-[3px] left-[3px] bg-white rounded-full shadow-md transition-transform duration-300 ${notificationTimeStatus ? 'translate-x-[30px]' : ''}`}></div>
+                                <div className='flex justify-center items-center gap-2'>
+                                    <input
+                                        type="checkbox"
+                                        id="notificationTimeStatus"
+                                        className="hidden"
+                                        checked={notificationTimeStatus}
+                                        onChange={() => setNotificationTimeStatus(!notificationTimeStatus)}
+                                    />
+                                    <label
+                                        htmlFor="notificationTimeStatus"
+                                        className={`relative block w-[60px] h-[30px] rounded-full cursor-pointer transition duration-300 ${notificationTimeStatus ? 'bg-red-600' : 'bg-[#ebebeb]'}`}
+                                    >
+                                        <div className={`absolute w-[24px] h-[24px] top-[3px] left-[3px] bg-white rounded-full shadow-md transition-transform duration-300 ${notificationTimeStatus ? 'translate-x-[30px]' : ''}`}></div>
 
-                      {!notificationTimeStatus ? (
-                        <FontAwesomeIcon
-                          icon={faBellSlash}
-                          className="absolute w-[18px] top-[6px] left-[6px] text-gray-500" // Positioned on the left
-                        />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faBell}
-                          className="absolute w-[18px] top-[6px] right-[6px] text-gray-500" // Positioned on the right
-                        />
-                      )}
-                    </label>
+                                        {!notificationTimeStatus ? (
+                                            <FontAwesomeIcon
+                                                icon={faBellSlash}
+                                                className="absolute w-[18px] top-[6px] left-[6px] text-gray-500" // Positioned on the left
+                                            />
+                                        ) : (
+                                            <FontAwesomeIcon
+                                                icon={faBell}
+                                                className="absolute w-[18px] top-[6px] right-[6px] text-gray-500" // Positioned on the right
+                                            />
+                                        )}
+                                    </label>
 
-                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
-                      Enable Notification Time
-                    </label>
-                  </div>
+                                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
+                                        Enable Notification Time
+                                    </label>
+                                </div>
                                 {notificationTimeStatus && (
                                     <div className='flex justify-center items-center gap-2'>
                                         <input
@@ -369,12 +369,12 @@ export default function Card(
                             </div>
                             <hr className="mb-4 border-black" />
                             <textarea
-    ref={contentTextareaRef}
-    value={content}
-    onChange={(e) => setContent(e.target.value)}
-    className="w-full h-full border-none bg-transparent outline-none resize-none overflow-hidden p-2 max-h-44 " // Added overflow-hidden and padding
-    placeholder="Content"
-/>
+                                ref={contentTextareaRef}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                className="w-full h-full border-none bg-transparent outline-none resize-none overflow-hidden p-2 max-h-44 " // Added overflow-hidden and padding
+                                placeholder="Content"
+                            />
 
                         </div>
                         <div className='flex justify-between items-center mt-2'>
