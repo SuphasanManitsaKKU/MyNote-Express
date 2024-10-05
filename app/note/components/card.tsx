@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { set } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {  faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
 
 interface CardProps {
     cardId: string;
@@ -288,46 +290,37 @@ export default function Card(
                         <div className='flex-grow'>
                             {/* Checkbox สำหรับเลือกเปิด/ปิด Notification Time */}
                             <div className='flex justify-between items-center min-h-12'>
-                                <div className='flex justify-center items-center gap-2'>
-                                <input 
-                                    type="checkbox" 
-                                    id="notificationTimeStatus" 
-                                    className="hidden" 
-                                    checked={notificationTimeStatus} 
-                                    onChange={() => setNotificationTimeStatus(!notificationTimeStatus)} 
-                                />
-                                <label 
-                                    htmlFor="notificationTimeStatus" 
-                                    className={`relative block w-[60px] h-[30px] rounded-full cursor-pointer transition duration-300 ${notificationTimeStatus ? 'bg-red-600' : 'bg-[#ebebeb]'}`} // Increased width and height by 20%
-                                >
-                                    <div className={`absolute w-[24px] h-[24px] top-[3px] left-[3px] bg-white rounded-full shadow-md transition-transform duration-300 ${notificationTimeStatus ? 'translate-x-[30px]' : ''}`}></div>
-                                    <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        fill="none" 
-                                        viewBox="0 0 24 24" 
-                                        strokeWidth="1.5" 
-                                        stroke="currentColor" 
-                                        className="absolute w-[18px] top-[6px] left-[6px]" // Increased size and positioned on the left
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.97m1.965-2.277L21 21m-4.225-4.225a23.81 23.81 0 0 0 3.536-1.003A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6.53 6.53m10.245 10.245L6.53 6.53M3 3l3.53 3.53" />
-                                    </svg>
+                            <div className='flex justify-center items-center gap-2'>
+                    <input
+                      type="checkbox"
+                      id="notificationTimeStatus"
+                      className="hidden"
+                      checked={notificationTimeStatus}
+                      onChange={() => setNotificationTimeStatus(!notificationTimeStatus)}
+                    />
+                    <label
+                      htmlFor="notificationTimeStatus"
+                      className={`relative block w-[60px] h-[30px] rounded-full cursor-pointer transition duration-300 ${notificationTimeStatus ? 'bg-red-600' : 'bg-[#ebebeb]'}`}
+                    >
+                      <div className={`absolute w-[24px] h-[24px] top-[3px] left-[3px] bg-white rounded-full shadow-md transition-transform duration-300 ${notificationTimeStatus ? 'translate-x-[30px]' : ''}`}></div>
 
-                                    {/* Right Open Bell SVG */}
-                                    <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        fill="none" 
-                                        viewBox="0 0 24 24" 
-                                        strokeWidth="1.5" 
-                                        stroke="currentColor" 
-                                        className="absolute w-[18px] top-[6px] right-[6px]" // Increased size and positioned on the right
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                                    </svg>
-                                </label>
-                                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
-                                        Enable Notification Time
-                                    </label>
-                                </div>
+                      {!notificationTimeStatus ? (
+                        <FontAwesomeIcon
+                          icon={faBellSlash}
+                          className="absolute w-[18px] top-[6px] left-[6px] text-gray-500" // Positioned on the left
+                        />
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={faBell}
+                          className="absolute w-[18px] top-[6px] right-[6px] text-gray-500" // Positioned on the right
+                        />
+                      )}
+                    </label>
+
+                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
+                      Enable Notification Time
+                    </label>
+                  </div>
                                 {notificationTimeStatus && (
                                     <div className='flex justify-center items-center gap-2'>
                                         <input
