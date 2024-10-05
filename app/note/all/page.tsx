@@ -267,9 +267,9 @@ export default function Home() {
   const handleUpdateCard = (updatedCard: CardProps) => {
     setCards(prevCards => {
       // ถ้า status เป็น false ให้กรองการ์ดนั้นออก
-      if (updatedCard.status === true) {
-        return prevCards.filter(card => card.cardId !== updatedCard.cardId);
-      }
+      // if (updatedCard.status === true) {
+      //   return prevCards.filter(card => card.cardId !== updatedCard.cardId);
+      // }
 
       // ถ้า status เป็น true ให้ทำการอัปเดตการ์ด
       return prevCards.map(card =>
