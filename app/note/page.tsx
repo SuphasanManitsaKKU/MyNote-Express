@@ -164,19 +164,19 @@ export default function Home() {
         );
 
         const fetchedCards = response.data
-          .filter((note: any) => note.status === false)  // กรอง status เป็น false
-          .map((note: any) => ({
-            cardId: note.noteId,
-            title: note.title,
-            content: note.content,
-            cardColor: note.color,
-            date: note.date,
-            status: note.status,
-            notificationTimeStatus: note.notificationTimeStatus,
-            notificationTime: note.notificationTime,
-            userId: note.userId,
-            isEditing: false
-          }));
+        .filter((note: any) => note.status === false)  // กรอง status เป็น false
+        .map((note: any) => ({
+          cardId: note.noteId,
+          title: note.title,
+          content: note.content,
+          cardColor: note.color,
+          date: note.date,
+          status: note.status,
+          notificationTimeStatus: note.notificationTimeStatus,
+          notificationTime: note.notificationTime,
+          userId: note.userId,
+          isEditing: false
+        }));
 
         setCards(fetchedCards);
       } catch (error) {
@@ -291,7 +291,7 @@ export default function Home() {
       </button>
 
       <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
-
+      
       <div className="relative mb-6 w-2/3">
         <input
           type="text"
@@ -453,5 +453,7 @@ export default function Home() {
 
 
     </div>
+
+
   );
 }
