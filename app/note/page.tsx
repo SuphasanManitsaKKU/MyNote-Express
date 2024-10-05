@@ -10,6 +10,7 @@ import debounce from 'lodash.debounce';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faCircle, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
+import LoadingSpinner from './components/LoadingSpinner';
 
 export default function Home() {
   const router = useRouter();
@@ -285,226 +286,229 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
-      <button
-        onClick={handleLogout}
-        className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
-      >
-        Log Out
-      </button>
+    !userId ? (
+      <LoadingSpinner />
+    ) : (
+      <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
+        <button
+          onClick={handleLogout}
+          className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Log Out
+        </button>
 
-      <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
+        <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
 
-      <div className="relative mb-6 w-2/3">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-300 rounded-lg w-full"
-          placeholder="Search cards by title or content"
-          ref={inputRef}  // ผูก ref ไปยัง input
-        />
-        {searchTerm && (
-          <button
-            onClick={handleClearSearch} // ใช้ฟังก์ชัน handleClearSearch สำหรับการคลิก
-            className="absolute right-1 top-[12%] bg-gray-200 px-2 py-1 rounded"
+        <div className="relative mb-6 w-2/3">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border border-gray-300 rounded-lg w-full"
+            placeholder="Search cards by title or content"
+            ref={inputRef}  // ผูก ref ไปยัง input
+          />
+          {searchTerm && (
+            <button
+              onClick={handleClearSearch} // ใช้ฟังก์ชัน handleClearSearch สำหรับการคลิก
+              className="absolute right-1 top-[12%] bg-gray-200 px-2 py-1 rounded"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="flex justify-center items-center w-full px-4">
+          <Link
+            href="/note/all"
+            className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
           >
-            Clear
-          </button>
-        )}
-      </div>
+            <FontAwesomeIcon icon={faCircle} className='pe-1' />
+            All
+          </Link>
 
-      <div className="flex justify-center items-center w-full px-4">
-        <Link
-          href="/note/all"
-          className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
-        >
-          <FontAwesomeIcon icon={faCircle} className='pe-1' />
-          All
-        </Link>
+          <Link
+            href="/note"
+            className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400"
+          >
+            <FontAwesomeIcon icon={faCircle} className='pe-1' />
+            Uncompleted
+          </Link>
 
-        <Link
-          href="/note"
-          className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400"
-        >
-          <FontAwesomeIcon icon={faCircle} className='pe-1' />
-          Uncompleted
-        </Link>
+          <Link
+            href="/note/archive"
+            className="flex-1 px-4 py-2 text-center  transition duration-300 text-black hover:text-gray-500"
+          >
+            <FontAwesomeIcon icon={faCircleCheck} className='pe-1' />
+            Completed
+          </Link>
+        </div>
 
-        <Link
-          href="/note/archive"
-          className="flex-1 px-4 py-2 text-center  transition duration-300 text-black hover:text-gray-500"
-        >
-          <FontAwesomeIcon icon={faCircleCheck} className='pe-1' />
-          Completed
-        </Link>
-      </div>
+        <div className="px-8 mb-2 w-full">
+          <hr className="border border-gray-300" />
+        </div>
 
-      <div className="px-8 mb-2 w-full">
-        <hr className="border border-gray-300" />
-      </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
+          {filteredCards.length > 0 ? (
+            filteredCards.map((card) => (
+              <Card
+                key={card.cardId}
+                cardId={card.cardId}
+                title={card.title}
+                content={card.content}
+                cardColor={card.cardColor}
+                date={card.date}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
-        {filteredCards.length > 0 ? (
-          filteredCards.map((card) => (
-            <Card
-              key={card.cardId}
-              cardId={card.cardId}
-              title={card.title}
-              content={card.content}
-              cardColor={card.cardColor}
-              date={card.date}
+                status={card.status}
+                notificationTimeStatus={card.notificationTimeStatus}
+                notificationTime={card.notificationTime}
 
-              status={card.status}
-              notificationTimeStatus={card.notificationTimeStatus}
-              notificationTime={card.notificationTime}
+                userId={card.userId}
+                onDelete={handleDeleteCard}
+                onUpdate={handleUpdateCard}
+              />
+            ))
+          ) : (
+            <p></p>
+          )}
 
-              userId={card.userId}
-              onDelete={handleDeleteCard}
-              onUpdate={handleUpdateCard}
-            />
-          ))
-        ) : (
-          <p></p>
-        )}
+        </div>
 
-      </div>
+        <div className="fixed bottom-4 right-4">
+          <Image
+            width={50}
+            height={50}
+            src="/plus.png"
+            alt="Add Card"
+            onClick={handleCreateCard}
+          />
+        </div>
 
-      <div className="fixed bottom-4 right-4">
-        <Image
-          width={50}
-          height={50}
-          src="/plus.png"
-          alt="Add Card"
-          onClick={handleCreateCard}
-        />
-      </div>
-
-      {isPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
-          <div
-            className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105`}>
-            <div className='flex flex-col h-full'>
-              <div className='flex-grow'>
-                {/* Checkbox สำหรับเลือกเปิด/ปิด Notification Time */}
-                <div className='flex justify-between items-center min-h-12'>
-                  <div className='flex justify-center items-center gap-2'>
-                    <input
-                      type="checkbox"
-                      id="notificationTimeStatus"
-                      className="hidden"
-                      checked={notificationTimeStatus}
-                      onChange={() => setNotificationTimeStatus(!notificationTimeStatus)}
-                    />
-                    <label
-                      htmlFor="notificationTimeStatus"
-                      className={`relative block w-[60px] h-[30px] rounded-full cursor-pointer transition duration-300 ${notificationTimeStatus ? 'bg-red-600' : 'bg-[#ebebeb]'}`}
-                    >
-                      <div className={`absolute w-[24px] h-[24px] top-[3px] left-[3px] bg-white rounded-full shadow-md transition-transform duration-300 ${notificationTimeStatus ? 'translate-x-[30px]' : ''}`}></div>
-
-                      {!notificationTimeStatus ? (
-                        <FontAwesomeIcon
-                          icon={faBellSlash}
-                          className="absolute w-[18px] top-[6px] left-[6px] text-gray-500" // Positioned on the left
-                        />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faBell}
-                          className="absolute w-[18px] top-[6px] right-[6px] text-gray-500" // Positioned on the right
-                        />
-                      )}
-                    </label>
-
-                    <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
-                      Enable Notification Time
-                    </label>
-                  </div>
-                  {notificationTimeStatus && (
+        {isPopupOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+            <div
+              className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105`}>
+              <div className='flex flex-col h-full'>
+                <div className='flex-grow'>
+                  {/* Checkbox สำหรับเลือกเปิด/ปิด Notification Time */}
+                  <div className='flex justify-between items-center min-h-12'>
                     <div className='flex justify-center items-center gap-2'>
                       <input
-                        type="datetime-local"
-                        id="notificationTime"
-                        value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
-                        min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
-                        onChange={(e) => {
-                          setNotificationTime(e.target.value)
-                        }} // เก็บค่าที่ผู้ใช้เลือกใน state
-                        className="p-2 border border-gray-300 rounded-lg"
+                        type="checkbox"
+                        id="notificationTimeStatus"
+                        className="hidden"
+                        checked={notificationTimeStatus}
+                        onChange={() => setNotificationTimeStatus(!notificationTimeStatus)}
                       />
+                      <label
+                        htmlFor="notificationTimeStatus"
+                        className={`relative block w-[60px] h-[30px] rounded-full cursor-pointer transition duration-300 ${notificationTimeStatus ? 'bg-red-600' : 'bg-[#ebebeb]'}`}
+                      >
+                        <div className={`absolute w-[24px] h-[24px] top-[3px] left-[3px] bg-white rounded-full shadow-md transition-transform duration-300 ${notificationTimeStatus ? 'translate-x-[30px]' : ''}`}></div>
+
+                        {!notificationTimeStatus ? (
+                          <FontAwesomeIcon
+                            icon={faBellSlash}
+                            className="absolute w-[18px] top-[6px] left-[6px] text-gray-500" // Positioned on the left
+                          />
+                        ) : (
+                          <FontAwesomeIcon
+                            icon={faBell}
+                            className="absolute w-[18px] top-[6px] right-[6px] text-gray-500" // Positioned on the right
+                          />
+                        )}
+                      </label>
+
+                      <label htmlFor="notificationTimeStatus" className="text-sm text-gray-600">
+                        Enable Notification Time
+                      </label>
                     </div>
-                  )}
-                </div>
+                    {notificationTimeStatus && (
+                      <div className='flex justify-center items-center gap-2'>
+                        <input
+                          type="datetime-local"
+                          id="notificationTime"
+                          value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
+                          min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
+                          onChange={(e) => {
+                            setNotificationTime(e.target.value)
+                          }} // เก็บค่าที่ผู้ใช้เลือกใน state
+                          className="p-2 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                {/* Title Input */}
-                <input
-                  ref={titleInputRef}
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border-none bg-transparent outline-none mb-4"
-                  placeholder="Title"
-                />
-                <hr />
+                  {/* Title Input */}
+                  <input
+                    ref={titleInputRef}
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full border-none bg-transparent outline-none mb-4"
+                    placeholder="Title"
+                  />
+                  <hr />
 
-                {/* Content Textarea */}
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full h-full border-none bg-transparent outline-none resize-none"
-                  placeholder="Content"
-                />
-              </div>
-
-              <div className='flex justify-between items-center mt-4'>
-                {/* Color Picker */}
-                <div className='flex gap-2 border p-2 rounded-2xl bg-white'>
-                  <button
-                    className={`w-6 h-6 rounded-full border ${selectedColor === 'bg-white' ? 'border-black' : ''} bg-white`}
-                    onClick={() => handleColorChange('bg-white')}
-                    aria-label="White"
-                  />
-                  <button
-                    className={`w-6 h-6 rounded-full border ${selectedColor === '#B3E5FC' ? 'border-black' : ''} bg-[#B3E5FC]`}
-                    onClick={() => handleColorChange('bg-[#B3E5FC]')}
-                    aria-label="Light Blue"
-                  />
-                  <button
-                    className={`w-6 h-6 rounded-full border ${selectedColor === '#B9FBC0' ? 'border-black' : ''} bg-[#B9FBC0]`}
-                    onClick={() => handleColorChange('bg-[#B9FBC0]')}
-                    aria-label="Light Green"
-                  />
-                  <button
-                    className={`w-6 h-6 rounded-full border ${selectedColor === '#FFABAB' ? 'border-black' : ''} bg-[#FFABAB]`}
-                    onClick={() => handleColorChange('bg-[#FFABAB]')}
-                    aria-label="Light Red"
-                  />
-                  <button
-                    className={`w-6 h-6 rounded-full border ${selectedColor === '#FFF9C4' ? 'border-black' : ''} bg-[#FFF9C4]`}
-                    onClick={() => handleColorChange('bg-[#FFF9C4]')}
-                    aria-label="Light Yellow"
-                  />
-                  <button
-                    className={`w-6 h-6 rounded-full border ${selectedColor === '#CFD8DC' ? 'border-black' : ''} bg-[#CFD8DC]`}
-                    onClick={() => handleColorChange('bg-[#CFD8DC]')}
-                    aria-label="Light Gray"
+                  {/* Content Textarea */}
+                  <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className="w-full h-full border-none bg-transparent outline-none resize-none"
+                    placeholder="Content"
                   />
                 </div>
 
-                {/* Create and Cancel Buttons */}
-                <div className='flex justify-center items-center gap-4'>
-                  <button onClick={handleClosePopup} className="text-gray-400">Cancel</button>
-                  <button onClick={handleSaveCard} className="bg-sky-400 hover:bg-sky-700 text-white px-3 py-2 rounded-3xl">Create</button>
+                <div className='flex justify-between items-center mt-4'>
+                  {/* Color Picker */}
+                  <div className='flex gap-2 border p-2 rounded-2xl bg-white'>
+                    <button
+                      className={`w-6 h-6 rounded-full border ${selectedColor === 'bg-white' ? 'border-black' : ''} bg-white`}
+                      onClick={() => handleColorChange('bg-white')}
+                      aria-label="White"
+                    />
+                    <button
+                      className={`w-6 h-6 rounded-full border ${selectedColor === '#B3E5FC' ? 'border-black' : ''} bg-[#B3E5FC]`}
+                      onClick={() => handleColorChange('bg-[#B3E5FC]')}
+                      aria-label="Light Blue"
+                    />
+                    <button
+                      className={`w-6 h-6 rounded-full border ${selectedColor === '#B9FBC0' ? 'border-black' : ''} bg-[#B9FBC0]`}
+                      onClick={() => handleColorChange('bg-[#B9FBC0]')}
+                      aria-label="Light Green"
+                    />
+                    <button
+                      className={`w-6 h-6 rounded-full border ${selectedColor === '#FFABAB' ? 'border-black' : ''} bg-[#FFABAB]`}
+                      onClick={() => handleColorChange('bg-[#FFABAB]')}
+                      aria-label="Light Red"
+                    />
+                    <button
+                      className={`w-6 h-6 rounded-full border ${selectedColor === '#FFF9C4' ? 'border-black' : ''} bg-[#FFF9C4]`}
+                      onClick={() => handleColorChange('bg-[#FFF9C4]')}
+                      aria-label="Light Yellow"
+                    />
+                    <button
+                      className={`w-6 h-6 rounded-full border ${selectedColor === '#CFD8DC' ? 'border-black' : ''} bg-[#CFD8DC]`}
+                      onClick={() => handleColorChange('bg-[#CFD8DC]')}
+                      aria-label="Light Gray"
+                    />
+                  </div>
+
+                  {/* Create and Cancel Buttons */}
+                  <div className='flex justify-center items-center gap-4'>
+                    <button onClick={handleClosePopup} className="text-gray-400">Cancel</button>
+                    <button onClick={handleSaveCard} className="bg-sky-400 hover:bg-sky-700 text-white px-3 py-2 rounded-3xl">Create</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
 
 
-    </div>
-
+      </div>
+    )
 
   );
 }
