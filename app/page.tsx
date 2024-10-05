@@ -32,7 +32,7 @@ export default function Home() {
         }
       })
       .then(() => {
-        router.push('/note'); // ใช้ router navigation ที่ถูกต้อง
+        router.push('/note/all'); // ใช้ router navigation ที่ถูกต้อง
       });
 
     } catch (error) {
