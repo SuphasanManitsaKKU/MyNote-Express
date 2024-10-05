@@ -239,16 +239,16 @@ export default function Card(
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={handleClickOutside} />
             )}
             <div
-                className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content ${isEditing ? 'fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105 ' : 'h-96 relative'}`}
+                className={`border border-gray-300 rounded-lg shadow-md p-6 m-4 ${cardColor} card-content ${isEditing ? 'fixed inset-1/4 w-1/2 h-1/2 z-50 transform scale-105 ' : 'h-64 relative'}`}
                 onClick={handleEditMode}
             >
                 {!isEditing ? (
                     <div>
-                        <h2 className={`text-xl font-semibold mb-4 break-words ${status ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                        <h2 className={`text-xl font-semibold mb-4 whitespace-nowrap overflow-hidden text-ellipsis ${status ? 'line-through text-gray-500' : 'text-gray-800'}`}>
                             {title}
                         </h2>
                         <hr className="mb-4 border-black" />
-                        <p className={`text-gray-600 break-words line-clamp-[8] ${status ? 'line-through text-gray-500' : ''}`}>
+                        <p className={`text-gray-600 break-words line-clamp-5 ${status ? ' text-gray-500' : ''}`}>
                             {content}
                         </p>
                         <label
@@ -280,7 +280,6 @@ export default function Card(
                                 onClick={handleDelete}
                             />
                         </div>
-
 
                     </div>
 
@@ -377,12 +376,13 @@ export default function Card(
                             </div>
                             <hr className="mb-4 border-black" />
                             <textarea
-                                ref={contentTextareaRef}
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                className="w-full h-full border-none bg-transparent outline-none resize-none"
-                                placeholder="Content"
-                            />
+    ref={contentTextareaRef}
+    value={content}
+    onChange={(e) => setContent(e.target.value)}
+    className="w-full h-full border-none bg-transparent outline-none resize-none overflow-hidden p-2 max-h-44 " // Added overflow-hidden and padding
+    placeholder="Content"
+/>
+
                         </div>
                         <div className='flex justify-between items-center mt-2'>
                             <div className='flex gap-2 border p-2 rounded-2xl bg-white'>
