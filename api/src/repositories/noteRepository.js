@@ -40,7 +40,7 @@ class NoteRepository {
         userId: userId,
       },
       orderBy: {
-        noteId: 'asc',
+        noteId: 'desc',
       },
     });
   }
