@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import Card from "./components/card";
+import Card from "../components/card";
 import Image from "next/image";
 import Swal from 'sweetalert2';
 import axios from 'axios';
