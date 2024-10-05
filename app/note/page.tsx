@@ -7,6 +7,8 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useRouter } from "next/navigation";
 import debounce from 'lodash.debounce';
+import ToggleSwitch from './components/toggleswicth';
+
 
 export default function Home() {
   const router = useRouter();
@@ -164,17 +166,17 @@ export default function Home() {
           }
         );
 
-        const fetchedCards = response.data.map((note: any) => ({
+        const fetchedCards = response.data
+        .filter((note: any) => note.status === false)  // กรอง status เป็น false
+        .map((note: any) => ({
           cardId: note.noteId,
           title: note.title,
           content: note.content,
           cardColor: note.color,
           date: note.date,
-
           status: note.status,
           notificationTimeStatus: note.notificationTimeStatus,
           notificationTime: note.notificationTime,
-
           userId: note.userId,
           isEditing: false
         }));
@@ -265,11 +267,19 @@ export default function Home() {
     cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean
   }
   const handleUpdateCard = (updatedCard: CardProps) => {
-    setCards(prevCards => prevCards.map(card =>
-      card.cardId === updatedCard.cardId
-        ? { ...card, ...updatedCard }
-        : card
-    ));
+    setCards(prevCards => {
+      // ถ้า status เป็น false ให้กรองการ์ดนั้นออก
+      if (updatedCard.status === true) {
+        return prevCards.filter(card => card.cardId !== updatedCard.cardId);
+      }
+
+      // ถ้า status เป็น true ให้ทำการอัปเดตการ์ด
+      return prevCards.map(card =>
+        card.cardId === updatedCard.cardId
+          ? { ...card, ...updatedCard }
+          : card
+      );
+    });
   };
 
   return (
@@ -282,7 +292,7 @@ export default function Home() {
       </button>
 
       <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
-
+      
       <div className="relative mb-6 w-2/3">
         <input
           type="text"
@@ -446,5 +456,7 @@ export default function Home() {
 
 
     </div>
+
+
   );
 }
