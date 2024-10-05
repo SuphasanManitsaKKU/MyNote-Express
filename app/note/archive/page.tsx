@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import Card from "./components/card";
+import Card from "../components/card";
 import Image from "next/image";
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -164,7 +164,7 @@ export default function Home() {
         );
 
         const fetchedCards = response.data
-          .filter((note: any) => note.status === false)  // กรอง status เป็น false
+          .filter((note: any) => note.status === true)  // กรอง status เป็น false
           .map((note: any) => ({
             cardId: note.noteId,
             title: note.title,
@@ -267,7 +267,7 @@ export default function Home() {
   const handleUpdateCard = (updatedCard: CardProps) => {
     setCards(prevCards => {
       // ถ้า status เป็น false ให้กรองการ์ดนั้นออก
-      if (updatedCard.status === true) {
+      if (updatedCard.status === false) {
         return prevCards.filter(card => card.cardId !== updatedCard.cardId);
       }
 
@@ -311,7 +311,7 @@ export default function Home() {
         )}
       </div>
 
-      <Link href="/note/archive">kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk</Link>
+      <Link href="/note">ggggggggggggggggggggggggggggggg</Link>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
         {filteredCards.length > 0 ? (
           filteredCards.map((card) => (

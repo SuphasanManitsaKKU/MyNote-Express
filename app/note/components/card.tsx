@@ -101,6 +101,28 @@ export default function Card(
         } catch (error) {
             console.error('There was an error updating the note:', error);
         }
+
+        const updatedCard: CardProps = {
+            cardId: initialCardId,
+            title,
+            content,
+            cardColor: selectedColor,
+            date, // This should already be part of your state or props
+            status : !status,
+            notificationTimeStatus,
+            notificationTime: notificationTime, // ใช้เวลาใหม่ที่บวกไป 7 ชั่วโมง
+            userId,
+            isEditing: false // Make sure to set a sensible default or current value
+            ,
+            onDelete: function (id: string): void {
+                throw new Error('Function not implemented.');
+            },
+            onUpdate: function (updatedCard: CardProps): void {
+                throw new Error('Function not implemented.');
+            }
+        };
+
+        onUpdate(updatedCard);
     }
 
     async function update() {
