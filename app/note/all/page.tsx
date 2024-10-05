@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import debounce from 'lodash.debounce';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck, faCircle, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck,faCircle, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons'
 
 export default function Home() {
   const router = useRouter();
