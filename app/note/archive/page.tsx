@@ -362,20 +362,6 @@ export default function Home() {
         )}
 
       </div>
-
-      <div className="fixed bottom-4 right-4">
-        <Image
-          width={50}
-          height={50}
-          src="/plus.png"
-          alt="Add Card"
-          onClick={handleCreateCard}
-        />
-      </div>
-
-
-
-
     </div>
   );
 }
