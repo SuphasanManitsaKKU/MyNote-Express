@@ -108,7 +108,6 @@ export default function Home() {
 
       // แปลง notificationTime จาก string เป็น Date object ก่อนเก็บใน state
       setCards([
-        ...cards,
         {
           cardId: newId,
           title: title.trim(),
@@ -128,7 +127,8 @@ export default function Home() {
           notificationTime: new Date(notificationTime), // แปลงเป็น Date object ก่อนเก็บ
           userId: userId,
           isEditing: false
-        }
+        },
+        ...cards // นำการ์ดใหม่มาไว้ที่ตำแหน่งแรก
       ]);
 
     } catch (error) {
