@@ -375,7 +375,6 @@ export default function Card(
     className="w-full h-full border-none bg-transparent outline-none resize-none overflow-hidden p-2 max-h-44 " // Added overflow-hidden and padding
     placeholder="Content"
 />
-
                         </div>
                         <div className='flex justify-between items-center mt-2'>
                             <div className='flex gap-2 border p-2 rounded-2xl bg-white'>

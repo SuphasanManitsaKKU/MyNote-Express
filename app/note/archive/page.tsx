@@ -9,9 +9,10 @@ import { useRouter } from "next/navigation";
 import debounce from 'lodash.debounce';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck} from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/LoadingSpinner';
-
+import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'; // Solid circle
+import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons';
 
 
 export default function Home() {
@@ -319,12 +320,12 @@ export default function Home() {
           )}
         </div>
 
-        <div className="flex justify-center items-center w-full px-4">
+        <div className="flex justify-center items-center w-full px-8">
           <Link
             href="/note/all"
-            className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-black hover:text-gray-500 "
+            className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500 "
           >
-            <FontAwesomeIcon icon={faCircle} className='pe-1' />
+            <FontAwesomeIcon icon={faCircleSolid} className='pe-1' />
             All
           </Link>
 
@@ -332,7 +333,7 @@ export default function Home() {
             href="/note"
             className="flex-1 px-4 py-2 text-center transition duration-300   text-black hover:text-gray-500 "
           >
-            <FontAwesomeIcon icon={faCircle} className='pe-1' />
+            <FontAwesomeIcon icon={faCircleRegular} className='pe-1' />
             Uncompleted
           </Link>
 
