@@ -17,7 +17,7 @@ class NoteService {
     const notes = await noteRepository.getAllNotes(userId);
   
     if (!notes || notes.length === 0) {
-      throw new Error('No notes found');
+      return {};
     }
   
     // ตั้งค่าฟอร์แมตวันที่

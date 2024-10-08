@@ -24,6 +24,9 @@ class NoteController {
   async updateNote(req, res) {
     const { userId, noteId } = req.params
     const { title, content, color, status, notificationTimeStatus, notificationTime } = req.body
+    console.log("notificationTimeStatus", notificationTimeStatus);
+    console.log("notificationTime", notificationTime);
+
 
     try {
       const updatededNote = await noteService.update(userId, noteId, title, content, color, status, notificationTimeStatus, notificationTime);
@@ -64,7 +67,7 @@ class NoteController {
         sameSite: 'None',
         domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
         // domain: '.pattheeratee.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
-        maxAge: 18000000 // 5 hours
+        maxAge: 1800000000 // 5 hours
       });
 
 

@@ -25,7 +25,7 @@ export default function Home() {
   const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTime, setNotificationTime] = useState(
-    new Date().toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
+    new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
   );
   const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +51,7 @@ export default function Home() {
     setCardColor('bg-white');
     setStatus(false);
     setNotificationTimeStatus(false);
-    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
+    setNotificationTime(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
@@ -59,11 +59,14 @@ export default function Home() {
     let selectedDateTime = new Date(notificationTime);
 
     if (notificationTimeStatus && notificationTime) {
-
-      // Add 7 hours to the selectedDateTime
-      selectedDateTime.setHours(selectedDateTime.getHours() + 7);
+    
 
       const currentDateTime = new Date();
+      // console.log('currentDateTime:', currentDateTime);
+      // console.log('selectedDateTime:', selectedDateTime);
+      // console.log('currentDateTime.getTime():', new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16));
+      
+      
 
       // ถ้าผู้ใช้เลือกวันเวลาในอดีต
       if (selectedDateTime < currentDateTime) {
@@ -101,7 +104,7 @@ export default function Home() {
         color: cardColor,
         status: status,
         notificationTimeStatus: notificationTimeStatus,
-        notificationTime: new Date(selectedDateTime).toISOString(), // ส่งเป็น ISO string ไปยัง backend
+        notificationTime: new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString(), // ส่งเป็น ISO string ไปยัง backend
         userId: userId
       }, {
         withCredentials: true
@@ -144,7 +147,7 @@ export default function Home() {
     setCardColor('bg-white');
     setStatus(false);
     setNotificationTimeStatus(false);
-    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
+    setNotificationTime(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
@@ -162,13 +165,11 @@ export default function Home() {
       try {
         const userId = await fetchData();
         setUserId(userId);
-
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/notes/${userId}`,
           {
             withCredentials: true
           }
         );
-
         const fetchedCards = response.data
           .filter((note: any) => note.status === false)  // กรอง status เป็น false
           .map((note: any) => ({
@@ -430,8 +431,8 @@ export default function Home() {
                         <input
                           type="datetime-local"
                           id="notificationTime"
-                          value={new Date(new Date(notificationTime).getTime() + 14 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
-                          min={new Date(new Date().getTime()).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
+                          value={notificationTime}
+                          min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)}
                           // value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
                           // min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
                           onChange={(e) => {
