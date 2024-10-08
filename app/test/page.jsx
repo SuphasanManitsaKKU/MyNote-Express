@@ -1,8 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react';
 
-const CLIENT_ID = '259876343365-3h5v2ra21nlrklc3imi751tgk21jbloq.apps.googleusercontent.com'; // Replace with your actual client ID
-const API_KEY = 'AIzaSyBAqRxZrEKFBaeq-hb7pj4BQ8VFLiJZe8Q'; // Replace with your actual API key
+const CLIENT_ID = '78626695946-f861c51cvg609njs2r5vso6h1ngrdbc1.apps.googleusercontent.com'; // Replace with your actual client ID
+const API_KEY = 'AIzaSyA-dzfCoji7HRgnTpVCc1NRvycA8yLyUQ4'; // Replace with your actual API key
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
