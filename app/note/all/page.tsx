@@ -10,9 +10,9 @@ import debounce from 'lodash.debounce';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
-import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'; // Solid circle
-import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons'; // Regular circleimport LoadingSpinner from '../components/LoadingSpinner';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'; // Solid circle
+import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons';
 
 export default function Home() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function Home() {
   const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTime, setNotificationTime] = useState(
-    new Date().toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
+    new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
   );
   const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +51,7 @@ export default function Home() {
     setCardColor('bg-white');
     setStatus(false);
     setNotificationTimeStatus(false);
-    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
+    setNotificationTime(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
@@ -59,11 +59,14 @@ export default function Home() {
     let selectedDateTime = new Date(notificationTime);
 
     if (notificationTimeStatus && notificationTime) {
-
-      // Add 7 hours to the selectedDateTime
-      selectedDateTime.setHours(selectedDateTime.getHours() + 7);
+    
 
       const currentDateTime = new Date();
+      // console.log('currentDateTime:', currentDateTime);
+      // console.log('selectedDateTime:', selectedDateTime);
+      // console.log('currentDateTime.getTime():', new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16));
+      
+      
 
       // ถ้าผู้ใช้เลือกวันเวลาในอดีต
       if (selectedDateTime < currentDateTime) {
@@ -101,7 +104,7 @@ export default function Home() {
         color: cardColor,
         status: status,
         notificationTimeStatus: notificationTimeStatus,
-        notificationTime: new Date(selectedDateTime).toISOString(), // ส่งเป็น ISO string ไปยัง backend
+        notificationTime: new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString(), // ส่งเป็น ISO string ไปยัง backend
         userId: userId
       }, {
         withCredentials: true
@@ -134,6 +137,7 @@ export default function Home() {
         ...cards // นำการ์ดใหม่มาไว้ที่ตำแหน่งแรก
       ]);
 
+
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
     }
@@ -143,7 +147,7 @@ export default function Home() {
     setCardColor('bg-white');
     setStatus(false);
     setNotificationTimeStatus(false);
-    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
+    setNotificationTime(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
@@ -161,15 +165,13 @@ export default function Home() {
       try {
         const userId = await fetchData();
         setUserId(userId);
-
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/notes/${userId}`,
           {
             withCredentials: true
           }
         );
-
         const fetchedCards = response.data
-          // .filter((note: any) => note.status === false)  // กรอง status เป็น false
+          // .filter((note: any) => note.status === true)  // กรอง status เป็น false
           .map((note: any) => ({
             cardId: note.noteId,
             title: note.title,
@@ -272,9 +274,9 @@ export default function Home() {
   const handleUpdateCard = (updatedCard: CardProps) => {
     setCards(prevCards => {
       // ถ้า status เป็น false ให้กรองการ์ดนั้นออก
-      // if (updatedCard.status === true) {
-      //   return prevCards.filter(card => card.cardId !== updatedCard.cardId);
-      // }
+      if (updatedCard.status === true) {
+        return prevCards.filter(card => card.cardId !== updatedCard.cardId);
+      }
 
       // ถ้า status เป็น true ให้ทำการอัปเดตการ์ด
       return prevCards.map(card =>
@@ -322,9 +324,9 @@ export default function Home() {
         <div className="flex justify-center items-center w-full px-8">
           <Link
             href="/note/all"
-            className="flex-1 px-4 py-2 text-center transition duration-300  border-b-2 text-sky-400 border-sky-400"
+            className="flex-1 px-4 py-2 text-center transition duration-300 border-b-2 text-sky-400 border-sky-400"
           >
-            <FontAwesomeIcon icon={faCircleSolid} className='pe-1 w-6' />
+            <FontAwesomeIcon icon={faCircleSolid} className='pe-1' />
             All
           </Link>
 
@@ -332,8 +334,8 @@ export default function Home() {
             href="/note"
             className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
           >
-            <FontAwesomeIcon icon={faCircleRegular} className='pe-1 w-6' />
-          Uncompleted
+            <FontAwesomeIcon icon={faCircleRegular} className='pe-1' />
+            Uncompleted
           </Link>
 
           <Link
@@ -429,8 +431,10 @@ export default function Home() {
                         <input
                           type="datetime-local"
                           id="notificationTime"
-                          value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
-                          min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
+                          value={notificationTime}
+                          min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)}
+                          // value={new Date(new Date(notificationTime).getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // เพิ่ม 7 ชั่วโมง
+                          // min={new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)} // กำหนด min เป็นเวลาปัจจุบัน +7 ชั่วโมง
                           onChange={(e) => {
                             setNotificationTime(e.target.value)
                           }} // เก็บค่าที่ผู้ใช้เลือกใน state
@@ -510,5 +514,6 @@ export default function Home() {
 
       </div>
     )
+
   );
 }

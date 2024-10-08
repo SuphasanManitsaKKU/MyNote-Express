@@ -165,11 +165,14 @@ export default function Home() {
       try {
         const userId = await fetchData();
         setUserId(userId);
+        console.log("sssssssssssssssssssssssss");
+        
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/notes/${userId}`,
           {
             withCredentials: true
           }
         );
+        console.log("dddddddddddddddddddddd");
         const fetchedCards = response.data
           .filter((note: any) => note.status === false)  // กรอง status เป็น false
           .map((note: any) => ({

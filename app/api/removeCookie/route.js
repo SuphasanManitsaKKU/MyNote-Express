@@ -6,13 +6,18 @@ export async function GET() {
     const cookieNames = ['token', 'anotherCookieName']; // ระบุชื่อคุกกี้ที่ต้องการลบ
 
     // ลบคุกกี้แต่ละตัว
-    cookieNames.forEach(cookieName => {
-        cookies().set(cookieName, '', {
-            path: '/', // ตรวจสอบให้แน่ใจว่า path ตรงกัน
-            // domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่า domain ตรงกัน
-            maxAge: 0, // ทำให้คุกกี้หมดอายุทันที
+    const loopCount = 10; // จำนวนรอบที่ต้องการ
+
+    for (let i = 0; i < loopCount; i++) {
+        cookieNames.forEach(cookieName => {
+            cookies().set(cookieName, '', {
+                path: '/', // ตรวจสอบให้แน่ใจว่า path ตรงกัน
+                domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่า domain ตรงกัน
+                maxAge: 0, // ทำให้คุกกี้หมดอายุทันที
+            });
         });
-    });
+    }
+
 
     return new Response(JSON.stringify({ message: "All cookies have been deleted" }), { status: 200 });
 }
