@@ -183,7 +183,7 @@ export default function Home() {
             date: note.date,
             status: note.status,
             notificationTimeStatus: note.notificationTimeStatus,
-            notificationTime: note.notificationTime,
+            notificationTime: new Date(new Date(note.notificationTime).getTime()).toISOString().slice(0, 16),
             userId: note.userId,
             isEditing: false
           }));

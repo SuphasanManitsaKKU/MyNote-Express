@@ -9,11 +9,10 @@ import { useRouter } from "next/navigation";
 import debounce from 'lodash.debounce';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck} from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'; // Solid circle
 import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons';
-
 
 export default function Home() {
   const router = useRouter();
@@ -26,7 +25,7 @@ export default function Home() {
   const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
   const [notificationTime, setNotificationTime] = useState(
-    new Date().toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
+    new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
   );
   const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,7 +51,7 @@ export default function Home() {
     setCardColor('bg-white');
     setStatus(false);
     setNotificationTimeStatus(false);
-    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
+    setNotificationTime(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
@@ -60,11 +59,14 @@ export default function Home() {
     let selectedDateTime = new Date(notificationTime);
 
     if (notificationTimeStatus && notificationTime) {
-
-      // Add 7 hours to the selectedDateTime
-      selectedDateTime.setHours(selectedDateTime.getHours() + 7);
+    
 
       const currentDateTime = new Date();
+      // console.log('currentDateTime:', currentDateTime);
+      // console.log('selectedDateTime:', selectedDateTime);
+      // console.log('currentDateTime.getTime():', new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16));
+      
+      
 
       // ถ้าผู้ใช้เลือกวันเวลาในอดีต
       if (selectedDateTime < currentDateTime) {
@@ -102,7 +104,7 @@ export default function Home() {
         color: cardColor,
         status: status,
         notificationTimeStatus: notificationTimeStatus,
-        notificationTime: new Date(selectedDateTime).toISOString(), // ส่งเป็น ISO string ไปยัง backend
+        notificationTime: new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString(), // ส่งเป็น ISO string ไปยัง backend
         userId: userId
       }, {
         withCredentials: true
@@ -112,7 +114,6 @@ export default function Home() {
 
       // แปลง notificationTime จาก string เป็น Date object ก่อนเก็บใน state
       setCards([
-        ...cards,
         {
           cardId: newId,
           title: title.trim(),
@@ -132,8 +133,10 @@ export default function Home() {
           notificationTime: new Date(notificationTime), // แปลงเป็น Date object ก่อนเก็บ
           userId: userId,
           isEditing: false
-        }
+        },
+        ...cards // นำการ์ดใหม่มาไว้ที่ตำแหน่งแรก
       ]);
+
 
     } catch (error) {
       console.error('There was an error fetching the notes:', error);
@@ -144,7 +147,7 @@ export default function Home() {
     setCardColor('bg-white');
     setStatus(false);
     setNotificationTimeStatus(false);
-    setNotificationTime(new Date().toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
+    setNotificationTime(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)); // รีเซ็ต notificationTime เป็นค่าเริ่มต้น
     setIsPopupOpen(false);
   }
 
@@ -162,13 +165,14 @@ export default function Home() {
       try {
         const userId = await fetchData();
         setUserId(userId);
-
+        console.log("sssssssssssssssssssssssss");
+        
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/notes/${userId}`,
           {
             withCredentials: true
           }
         );
-
+        console.log("dddddddddddddddddddddd");
         const fetchedCards = response.data
           .filter((note: any) => note.status === true)  // กรอง status เป็น false
           .map((note: any) => ({
@@ -179,7 +183,7 @@ export default function Home() {
             date: note.date,
             status: note.status,
             notificationTimeStatus: note.notificationTimeStatus,
-            notificationTime: note.notificationTime,
+            notificationTime: new Date(new Date(note.notificationTime).getTime()).toISOString().slice(0, 16),
             userId: note.userId,
             isEditing: false
           }));
@@ -323,7 +327,7 @@ export default function Home() {
         <div className="flex justify-center items-center w-full px-8">
           <Link
             href="/note/all"
-            className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500 "
+            className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
           >
             <FontAwesomeIcon icon={faCircleSolid} className='pe-1' />
             All
@@ -331,7 +335,7 @@ export default function Home() {
 
           <Link
             href="/note"
-            className="flex-1 px-4 py-2 text-center transition duration-300   text-black hover:text-gray-500 "
+            className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
           >
             <FontAwesomeIcon icon={faCircleRegular} className='pe-1' />
             Uncompleted
@@ -339,7 +343,7 @@ export default function Home() {
 
           <Link
             href="/note/archive"
-            className="flex-1 px-4 py-2 text-center  transition duration-300 border-b-2  text-sky-400 border-sky-400"
+            className="flex-1 px-4 py-2 text-center  transition duration-300 border-b-2 text-sky-400 border-sky-400"
           >
             <FontAwesomeIcon icon={faCircleCheck} className='pe-1' />
             Completed
@@ -349,6 +353,7 @@ export default function Home() {
         <div className="px-8 mb-2 w-full">
           <hr className="border border-gray-300" />
         </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
           {filteredCards.length > 0 ? (
             filteredCards.map((card) => (
@@ -374,7 +379,12 @@ export default function Home() {
           )}
 
         </div>
+
+
+
+
       </div>
     )
+
   );
 }
