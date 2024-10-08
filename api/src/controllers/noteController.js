@@ -57,7 +57,6 @@ class NoteController {
   };
 
   async loginUser(req, res) {
-    console.log('loginUser');
     const { email, password } = req.body
     try {
       const token = await noteService.loginUser(email, password);
@@ -100,3 +99,4 @@ class NoteController {
   }
 }
 
+module.exports = new NoteController();
