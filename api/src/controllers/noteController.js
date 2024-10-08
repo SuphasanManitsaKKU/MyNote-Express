@@ -62,7 +62,7 @@ class NoteController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'None',
-        // domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
+        domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
         maxAge: 18000000 // 5 hours
       });
 
