@@ -10,6 +10,7 @@ export async function GET() {
         cookies().set(cookieName, '', {
             path: '/', // ตรวจสอบให้แน่ใจว่า path ตรงกัน
             // domain: '.suphasan.site', // ตรวจสอบให้แน่ใจว่า domain ตรงกัน
+            domain: '.patheeratee.site', // ตรวจสอบให้แน่ใจว่าโดเมนตรงกัน
             maxAge: 0, // ทำให้คุกกี้หมดอายุทันที
         });
     });
