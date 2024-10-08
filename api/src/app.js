@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://www.suphasan.site', 'http://10.53.50.183:3000'],
+    origin: ['http://localhost:3000', 'https://www.suphasan.site','https://www.pattheeratee.site', 'http://10.53.50.183:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
