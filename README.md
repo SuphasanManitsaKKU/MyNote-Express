@@ -2,9 +2,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-Init Project:
-
 Windows
+
+Init Project:
 ```bash
 git clone https://github.com/SuphasanManitsaKKU/SuperNote.git
 cd SuperNote\api\docker
@@ -20,6 +20,7 @@ Run API:
 ```bash
 nodemon .\api\src\index.js
 ```
+
 open another terminal
 
 Run NextJS:
@@ -28,6 +29,8 @@ npm run dev
 ```
 
 Macbook
+
+Init Project:
 ```bash
 git clone https://github.com/SuphasanManitsaKKU/SuperNote.git
 cd SuperNote/api/docker
@@ -43,6 +46,7 @@ Run API:
 ```bash
 nodemon ./api/src/index.js
 ```
+
 open another terminal
 
 Run NextJS:
