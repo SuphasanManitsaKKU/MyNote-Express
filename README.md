@@ -4,21 +4,21 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 Init Project:
 
+Windows
 ```bash
 git clone https://github.com/SuphasanManitsaKKU/SuperNote.git
 cd SuperNote\api\docker
 docker compose up -d mongo6
 cd ..
+npm i
 npm install express @prisma/client
 npx prisma generate
-npm i
 cd ..
 npm i
 ```
 Run API:
 ```bash
-cd .\api
-nodemon .\src\index.js
+nodemon .\api\src\index.js
 ```
 open another terminal
 
@@ -26,6 +26,30 @@ Run NextJS:
 ```bash
 npm run dev
 ```
+
+Macbook
+```bash
+git clone https://github.com/SuphasanManitsaKKU/SuperNote.git
+cd SuperNote/api/docker
+docker compose up -d mongo6
+cd ..
+sudo npm i
+sudo npm install express @prisma/client
+sudo npx prisma generate
+cd ..
+sudo npm i
+```
+Run API:
+```bash
+nodemon ./api/src/index.js
+```
+open another terminal
+
+Run NextJS:
+```bash
+npm run dev
+```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
