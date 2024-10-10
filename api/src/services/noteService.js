@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const noteRepository = require('../repositories/noteRepository');
 const jwt = require('jsonwebtoken'); // ใช้ require สำหรับ CommonJS
-const sendEmail = require('../utils/sendEmail');
+const {sendEmail} = require('../utils/sendEmail');
 
 class NoteService {
   async createNote(title, content, color, status, notificationTimeStatus, notificationTime, userId) {
@@ -176,6 +176,15 @@ class NoteService {
 
     return noteRepository.changepassword(user.userId, hashedPassword);
   }
+  
+  //add by pond
+  async getUserEmail(userId) {
+    const user = await noteRepository.getUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.email;
+  } 
 }
 
 module.exports = new NoteService();

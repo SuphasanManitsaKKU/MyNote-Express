@@ -17,7 +17,7 @@ async function sendEmail(email, token) {
             to: `${email}`, // List of receivers
             subject: "Change Password", // Subject line
             text: "Change Password?", // Plain text body
-            html: `<b>Change Password Click => <a href="http://localhost:3000/change_password/${token}">Click me</a></b>`, // HTML body
+            html: `<b>Change Password Click => <a href="https://www.patheeratee.site/change_password/${token}">Click me</a></b>`, // HTML body
         });
         return 1;
     } catch (error) {

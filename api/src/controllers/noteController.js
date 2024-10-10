@@ -98,6 +98,18 @@ class NoteController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  //add by pond
+  async getUserEmail(req, res) {
+    const { userId } = req.params;
+    try {
+      const userEmail = await noteService.getUserEmail(userId);
+      res.status(200).json({ email: userEmail });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }  
+  
 }
 
 module.exports = new NoteController();

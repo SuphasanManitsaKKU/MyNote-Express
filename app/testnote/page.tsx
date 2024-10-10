@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import Card from "./components/card";
-import Header from './components/header';
+import Card from "../note/components/card";
 import Image from "next/image";
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -11,7 +10,7 @@ import debounce from 'lodash.debounce';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
-import LoadingSpinner from './components/LoadingSpinner';
+import LoadingSpinner from '../note/components/LoadingSpinner';
 import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'; // Solid circle
 import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons';
 
@@ -20,6 +19,7 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
+// Define the type for the token response
 interface TokenResponse {
   access_token: string;
   error?: string;
@@ -28,37 +28,25 @@ interface TokenResponse {
 export default function Home() {
   const router = useRouter();
   const [userId, setUserId] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [cardColor, setCardColor] = useState('bg-white');
+  const [date, setDate] = useState('2020-08-03');
 
-  const inputRef = useRef<HTMLInputElement>(null);  // ระบุชนิดของ ref ที่นี่
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  //-------------------- สำหรับ header.tsx
-  const [userEmail, setUserEmail] = useState(''); // เก็บอีเมลของผู้ใช้
-  const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false); // สถานะของป๊อปอัป
+  const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
+  const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
+  const [notificationTime, setNotificationTime] = useState(
+    new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
+  );
+  const [selectedColor, setSelectedColor] = useState('bg-white');
   const [searchTerm, setSearchTerm] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);  // ระบุชนิดของ ref ที่นี่
+  const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; status: boolean; notificationTimeStatus: boolean; notificationTime: Date; userId: string; isEditing: boolean }[]>([]);
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm); // สร้าง state แยกเพื่อใช้กับ debounce
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
-  const handleClearSearch = () => {
-    setSearchTerm('');
-    inputRef.current?.focus(); // ให้ focus กลับไปยัง input หลังจากเคลียร์ searchTerm
-  };
-
-  useEffect(() => { // ใช้ useEffect สำหรับ debounce เพื่อเลื่อนการค้นหา
-    const debouncedHandler = debounce(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 300);
-
-    debouncedHandler();
-
-    return () => {
-      debouncedHandler.cancel();
-    };
-  }, [searchTerm]);
-  
-  //-------------------- end สำหรับ header.tsx
-
-  //-----สำหรับ Google Calendar
   const [addToGoogleCalendar, setAddToGoogleCalendar] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [gapiInited, setGapiInited] = useState(false);
@@ -67,6 +55,7 @@ export default function Home() {
   const [endTime, setEndTime] = useState(
     new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16) // Default to 1 hour after the notificationTime
   );
+
   useEffect(() => {
     const loadGapi = () => {
       if (window.gapi) {
@@ -134,24 +123,6 @@ export default function Home() {
       tokenClient.requestAccessToken({ prompt: '' });
     }
   };
-  // --------- end google login calendar
-
-  
-  //-------------------- สำหรับ card.tsx
-  const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; status: boolean; notificationTimeStatus: boolean; notificationTime: Date; userId: string; isEditing: boolean }[]>([]);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [cardColor, setCardColor] = useState('bg-white');
-  const [date, setDate] = useState('2020-08-03');
-  const [status, setStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
-  const [notificationTimeStatus, setNotificationTimeStatus] = useState(false); // สร้าง state สำหรับเก็บค่า
-  const [notificationTime, setNotificationTime] = useState(
-    new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 16) // แปลงเป็นรูปแบบที่ใช้ได้กับ input type datetime-local
-  );
-
-  const [selectedColor, setSelectedColor] = useState('bg-white');
-  const [filterType, setFilterType] = useState<'all' | 'uncompleted' | 'completed'>('all');
-
 
   function handleColorChange(color: string) {
     setCardColor(color);
@@ -174,10 +145,6 @@ export default function Home() {
 
   async function handleSaveCard() {
     let selectedDateTime = new Date(notificationTime);
-    console.log('Selected DateTime for notification:', selectedDateTime); // Debugging log
-    selectedDateTime.setHours(selectedDateTime.getHours() + 7);
-
-    const selectedEndTime = new Date(endTime); // Use the selected end time
 
     if (notificationTimeStatus && notificationTime) {
       const currentDateTime = new Date();
@@ -194,20 +161,6 @@ export default function Home() {
           },
         });
         return; // หยุดการทำงานถ้าพบว่าเป็นเวลาในอดีต
-      }
-
-      // Validation for endTime to ensure it's not earlier than notificationTime
-      if (addToGoogleCalendar && selectedEndTime < selectedDateTime) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'End time cannot be earlier than start time. Please choose a valid end time.',
-          confirmButtonColor: '#38bdf8',
-          customClass: {
-            confirmButton: 'text-white',
-          },
-        });
-        return; // Stop saving if the end time is before the notification time
       }
     }
 
@@ -237,7 +190,6 @@ export default function Home() {
       }, {
         withCredentials: true
       });
-      console.log('Response from server:', response.data);
 
       const newId = await response.data.noteId;
 
@@ -259,7 +211,7 @@ export default function Home() {
           }).format(new Date()),
           status: status,
           notificationTimeStatus: notificationTimeStatus,
-          notificationTime: new Date(notificationTime), // Ensure Date object is stored correctly
+          notificationTime: new Date(notificationTime), // แปลงเป็น Date object ก่อนเก็บ
           userId: userId,
           isEditing: false
         },
@@ -272,6 +224,8 @@ export default function Home() {
     // Step 2: If "Add to Google Calendar" is checked and authorized, create the Google Calendar event
     if (addToGoogleCalendar && isAuthorized) {
       try {
+        const selectedEndTime = new Date(endTime); // Use the selected end time
+
         const eventData = {
           summary: title,
           description: content,
@@ -347,16 +301,13 @@ export default function Home() {
       try {
         const userId = await fetchData();
         setUserId(userId);
-        console.log("sssssssssssssssssssssssss");
-
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/notes/${userId}`,
           {
             withCredentials: true
           }
         );
-
-        console.log("dddddddddddddddddddddd");
         const fetchedCards = response.data
+          // .filter((note: any) => note.status === true)  // กรอง status เป็น false
           .map((note: any) => ({
             cardId: note.noteId,
             title: note.title,
@@ -365,7 +316,7 @@ export default function Home() {
             date: note.date,
             status: note.status,
             notificationTimeStatus: note.notificationTimeStatus,
-            notificationTime: new Date(new Date(note.notificationTime).getTime()).toISOString().slice(0, 16),
+            notificationTime: note.notificationTime,
             userId: note.userId,
             isEditing: false
           }));
@@ -373,6 +324,8 @@ export default function Home() {
         setCards(fetchedCards);
       } catch (error) {
         console.error('There was an error fetching the notes:', error);
+        handleLogout();
+
       }
     };
 
@@ -387,6 +340,46 @@ export default function Home() {
     }
   }, [isPopupOpen]);
 
+  function handleLogout() {
+    const revokeGoogleToken = () => {
+      if (isAuthorized && window.gapi && window.gapi.client) {
+        const token = window.gapi.client.getToken();
+        if (token) {
+          window.google.accounts.oauth2.revoke(token.access_token, () => {
+            console.log('Google Token revoked.');
+          });
+          window.gapi.client.setToken('');
+          localStorage.removeItem('access_token');
+          setIsAuthorized(false);
+        }
+      }
+    };
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Logged Out',
+      text: 'You have successfully logged out!',
+      confirmButtonColor: '#38bdf8',
+      customClass: {
+        confirmButton: 'text-white',
+      }
+    }).then(() => {
+      // Step 1: Revoke Google Token if authorized
+      revokeGoogleToken();
+
+      // Step 2: Remove session cookie and log out from the application
+      const fetchData = async () => {
+        try {
+          await axios.get(`${process.env.NEXT_PUBLIC_WEB}/api/removeCookie`);
+          router.push('/');
+        } catch (error) {
+          console.error('There was an error logging out:', error);
+        }
+      };
+      fetchData();
+    });
+  }
+
 
   function handleDeleteCard(id: string) {
 
@@ -397,53 +390,58 @@ export default function Home() {
   useEffect(() => {
   }, [cards]);
 
+  // ใช้ useEffect สำหรับ debounce เพื่อเลื่อนการค้นหา
+  useEffect(() => {
+    const debouncedHandler = debounce(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    debouncedHandler();
+
+    return () => {
+      debouncedHandler.cancel();
+    };
+  }, [searchTerm]);
 
   const filteredCards = useMemo(() => {
-    if (!cards) {
-      return [];
+    if (!searchTerm.trim()) {
+      return cards; // ถ้าไม่มีคำค้นหา ให้แสดงผลทั้งหมด
     }
 
-    let filtered = [...cards];
+    const searchLower = searchTerm.toLowerCase().trim(); // แปลงคำค้นหาเป็นตัวพิมพ์เล็กและลบช่องว่าง
 
-    // กรองข้อมูลตาม filterType
-    if (filterType === 'uncompleted') {
-      filtered = filtered.filter(card => !card.status); // กรองเฉพาะการ์ดที่ยังไม่เสร็จ
-    } else if (filterType === 'completed') {
-      filtered = filtered.filter(card => card.status); // กรองเฉพาะการ์ดที่เสร็จแล้ว
-    }
+    return cards.filter((card) => {
+      // แปลง title และ content เป็นตัวพิมพ์เล็ก
+      const titleLower = card.title.toLowerCase();
+      const contentLower = card.content.toLowerCase();
 
-    // กรองข้อมูลตาม searchTerm
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter((card) => {
-        const titleLower = card.title.toLowerCase();
-        const contentLower = card.content.toLowerCase();
-        return titleLower.includes(searchLower) || contentLower.includes(searchLower);
-      });
-    }
+      // ตรวจสอบว่าคำค้นหา (searchTerm) อยู่ใน title หรือ content หรือไม่
+      return titleLower.includes(searchLower) || contentLower.includes(searchLower);
+    });
+  }, [cards, searchTerm]);
 
-    return filtered;
-  }, [cards, searchTerm, filterType]);
-
-
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    inputRef.current?.focus(); // ให้ focus กลับไปยัง input หลังจากเคลียร์ searchTerm
+  };
   interface CardProps {
     status: boolean;
-    cardId: string; 
-    title: string; 
-    content: string; 
-    cardColor: string; 
-    date: string; 
-    userId: string; 
-    isEditing: boolean
+    cardId: string; title: string; content: string; cardColor: string; date: string; userId: string; isEditing: boolean
   }
   const handleUpdateCard = (updatedCard: CardProps) => {
-    setCards(prevCards =>
-      prevCards.map(card =>
+    setCards(prevCards => {
+      // ถ้า status เป็น false ให้กรองการ์ดนั้นออก
+      // if (updatedCard.status === true) {
+      //   return prevCards.filter(card => card.cardId !== updatedCard.cardId);
+      // }
+
+      // ถ้า status เป็น true ให้ทำการอัปเดตการ์ด
+      return prevCards.map(card =>
         card.cardId === updatedCard.cardId
           ? { ...card, ...updatedCard }
           : card
-      )
-    );
+      );
+    });
   };
 
   useEffect(() => {
@@ -467,45 +465,58 @@ export default function Home() {
       <LoadingSpinner />
     ) : (
       <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
-        {/* เรียกใช้ Header โดยส่ง userId, searchTerm และ setSearchTerm ไปให้ */}
-        <Header
-          userId={userId}
-          userEmail={userEmail}
-          setUserEmail={setUserEmail}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          handleClearSearch={handleClearSearch}
-          isProfilePopupOpen={isProfilePopupOpen}
-          setIsProfilePopupOpen={setIsProfilePopupOpen}
-          isAuthorized={isAuthorized}          // Add isAuthorized state
-          setIsAuthorized={setIsAuthorized}    // Add setIsAuthorized handler
-        />
+        <button
+          onClick={handleLogout}
+          className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Log Out
+        </button>
 
+        <h1 className="text-3xl font-bold mb-8 mt-12">My Note</h1>
+
+        <div className="relative mb-6 w-2/3">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border border-gray-300 rounded-lg w-full"
+            placeholder="Search cards by title or content"
+            ref={inputRef}  // ผูก ref ไปยัง input
+          />
+          {searchTerm && (
+            <button
+              onClick={handleClearSearch} // ใช้ฟังก์ชัน handleClearSearch สำหรับการคลิก
+              className="absolute right-1 top-[12%] bg-gray-200 px-2 py-1 rounded"
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
         <div className="flex justify-center items-center w-full px-8">
-          <button
-            onClick={() => setFilterType('all')}
-            className={`flex-1 px-4 py-2 text-center transition duration-300 ${filterType === 'all' ? 'text-sky-400 border-b-2 border-sky-400' : 'text-black hover:text-gray-500'}`}
+          <Link
+            href="/note/all"
+            className="flex-1 px-4 py-2 text-center transition duration-300 border-b-2 text-sky-400 border-sky-400"
           >
             <FontAwesomeIcon icon={faCircleSolid} className='pe-1' />
             All
-          </button>
+          </Link>
 
-          <button
-            onClick={() => setFilterType('uncompleted')}
-            className={`flex-1 px-4 py-2 text-center transition duration-300 ${filterType === 'uncompleted' ? 'text-sky-400 border-b-2 border-sky-400' : 'text-black hover:text-gray-500'}`}
+          <Link
+            href="/note"
+            className="flex-1 px-4 py-2 text-center transition duration-300  text-black hover:text-gray-500"
           >
             <FontAwesomeIcon icon={faCircleRegular} className='pe-1' />
             Uncompleted
-          </button>
+          </Link>
 
-          <button
-            onClick={() => setFilterType('completed')}
-            className={`flex-1 px-4 py-2 text-center transition duration-300 ${filterType === 'completed' ? 'text-sky-400 border-b-2 border-sky-400' : 'text-black hover:text-gray-500'}`}
+          <Link
+            href="/note/archive"
+            className="flex-1 px-4 py-2 text-center  transition duration-300 text-black hover:text-gray-500"
           >
             <FontAwesomeIcon icon={faCircleCheck} className='pe-1' />
             Completed
-          </button>
+          </Link>
         </div>
 
         <div className="px-8 mb-2 w-full">
@@ -522,9 +533,11 @@ export default function Home() {
                 content={card.content}
                 cardColor={card.cardColor}
                 date={card.date}
+
                 status={card.status}
                 notificationTimeStatus={card.notificationTimeStatus}
                 notificationTime={card.notificationTime}
+
                 userId={card.userId}
                 onDelete={handleDeleteCard}
                 onUpdate={handleUpdateCard}
@@ -536,17 +549,15 @@ export default function Home() {
 
         </div>
 
-        {filterType !== 'completed' && (
-          <div className="fixed bottom-4 right-4">
-            <Image
-              width={50}
-              height={50}
-              src="/plus.png"
-              alt="Add Card"
-              onClick={handleCreateCard}
-            />
-          </div>
-        )}
+        <div className="fixed bottom-4 right-4">
+          <Image
+            width={50}
+            height={50}
+            src="/plus.png"
+            alt="Add Card"
+            onClick={handleCreateCard}
+          />
+        </div>
 
         {isPopupOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
@@ -656,6 +667,7 @@ export default function Home() {
                     </div>
                   )}
 
+
                   {/* Title Input */}
                   <input
                     ref={titleInputRef}
@@ -721,11 +733,7 @@ export default function Home() {
             </div>
           </div>
         )}
-
-
-
       </div>
     )
-
   );
 }

@@ -18,6 +18,9 @@ try {
     router.put('/notes/:userId/:noteId', noteController.updateNote); // แก้ไข note
     router.delete('/notes/:userId/:noteId', noteController.deleteNote); // ลบ note
 
+    //add by pond
+    router.get('/user/:userId/email', noteController.getUserEmail);
+
 }
 catch (error) {
     console.error(error);
