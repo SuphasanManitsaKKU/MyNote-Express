@@ -55,7 +55,7 @@ export default function Home() {
       debouncedHandler.cancel();
     };
   }, [searchTerm]);
-  
+
   //-------------------- end สำหรับ header.tsx
 
   //-----สำหรับ Google Calendar
@@ -136,7 +136,7 @@ export default function Home() {
   };
   // --------- end google login calendar
 
-  
+
   //-------------------- สำหรับ card.tsx
   const [cards, setCards] = useState<{ cardId: string; title: string; content: string; cardColor: string; date: string; status: boolean; notificationTimeStatus: boolean; notificationTime: Date; userId: string; isEditing: boolean }[]>([]);
   const [title, setTitle] = useState("");
@@ -197,17 +197,19 @@ export default function Home() {
       }
 
       // Validation for endTime to ensure it's not earlier than notificationTime
-      if (addToGoogleCalendar && selectedEndTime < selectedDateTime) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'End time cannot be earlier than start time. Please choose a valid end time.',
-          confirmButtonColor: '#38bdf8',
-          customClass: {
-            confirmButton: 'text-white',
-          },
-        });
-        return; // Stop saving if the end time is before the notification time
+      if (addToGoogleCalendar && selectedEndTime) {
+        if (selectedEndTime >= selectedDateTime) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'End time cannot be earlier than start time. Please choose a valid end time.',
+            confirmButtonColor: '#38bdf8',
+            customClass: {
+              confirmButton: 'text-white',
+            },
+          });
+          return; // Stop saving if the end time is before the notification time
+        }
       }
     }
 
@@ -428,12 +430,12 @@ export default function Home() {
 
   interface CardProps {
     status: boolean;
-    cardId: string; 
-    title: string; 
-    content: string; 
-    cardColor: string; 
-    date: string; 
-    userId: string; 
+    cardId: string;
+    title: string;
+    content: string;
+    cardColor: string;
+    date: string;
+    userId: string;
     isEditing: boolean
   }
   const handleUpdateCard = (updatedCard: CardProps) => {

@@ -59,7 +59,7 @@ cron.schedule('* * * * *', async () => {
             if (formattedNotificationDateTime === currentDateTime) {
                 console.log("Sending email to: ", note.user.email);
                 
-                await sendEmail_v2(note.user.email, `Reminder for note: <b>${note.title}</b>`);
+                await sendEmail_v2(note.user.email, `Reminder for note: <b>${note.title}</b>`,`${note.content}`);
             }
         });
     } catch (error) {

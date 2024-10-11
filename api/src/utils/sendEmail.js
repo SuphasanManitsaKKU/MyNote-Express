@@ -17,7 +17,7 @@ async function sendEmail(email, token) {
             to: `${email}`, // List of receivers
             subject: "Change Password", // Subject line
             text: "Change Password?", // Plain text body
-            html: `<b>Change Password Click => <a href="https://www.patheeratee.site/change_password/${token}">Click me</a></b>`, // HTML body
+            html: `<b>Change Password Click => <a href="www.suphasan.site/change_password/${token}">Click me</a></b>`, // HTML body
         });
         return 1;
     } catch (error) {
@@ -25,7 +25,7 @@ async function sendEmail(email, token) {
     }
 }
 
-async function sendEmail_v2(email, text) {
+async function sendEmail_v2(email, text, text_content) {
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com", // SMTP server for Gmail
         port: 465,
@@ -44,7 +44,10 @@ async function sendEmail_v2(email, text) {
             text: "This is a reminder for an important event.", // ข้อความแจ้งเตือน
             html: `
                 <b>Reminder</b><br>
-                <p>${text}</p><br>
+                <p>${text}</p>
+                <hr>
+                <p style="color: gray;">${text_content}</p><br>
+
             `
         });
         return 1;
