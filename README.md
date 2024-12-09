@@ -1,3 +1,4 @@
+
 # My Note (Express)
 
 ## 📚 Tech Stack
@@ -37,3 +38,6 @@ Make sure you have the following installed:
    git clone https://github.com/SuphasanManitsaKKU/MyNote-Express-.git
    cd MyNote-Express-
    docker-compose up --build -d
+   ```
+
+Then go to http://localhost
