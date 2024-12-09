@@ -1,0 +1,19 @@
+# Ignore node_modules
+node_modules
+
+# Ignore log files
+*.log
+
+
+# Ignore Docker-specific files
+.dockerignore
+Dockerfile
+
+# Ignore local development tools and configs
+.vscode/
+.idea/
+*.iml
+
+# Ignore build artifacts
+dist/
+build/

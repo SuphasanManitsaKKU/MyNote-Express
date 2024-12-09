@@ -1,0 +1,51 @@
+services:
+  mongo6:
+    build:
+      context: .
+      args:
+        MONGO_VERSION: 6
+    container_name: mongo6
+    environment:
+      MONGO_REPLICA_HOST: mongo6
+      # MONGO_REPLICA_HOST: 127.0.0.1
+      MONGO_REPLICA_PORT: 27019
+      # Use "mongo" instead of "mongosh" before v5.0
+      MONGO_COMMAND: 'mongosh'
+    ports:
+      - '27019:27019'
+    restart: unless-stopped
+    healthcheck:
+      # Use "mongo" instead of "mongosh" before v5.0
+      test: ['CMD', 'mongosh', 'admin', '--port', '27019', '--eval', "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+  
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo6
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    environment:
+      NEXT_PUBLIC_API: http://localhost:80/api
+      NEXT_PUBLIC_WEB: http://localhost:80
+    ports:
+      - "3000:3000"
+
+  nnginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
