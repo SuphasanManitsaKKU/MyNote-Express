@@ -35,8 +35,8 @@ Make sure you have the following installed:
 ### Installation Steps
 1. Clone this repository:
    ```bash
-   git clone https://github.com/SuphasanManitsaKKU/MyNote-Express-.git
-   cd MyNote-Express-
+   git clone https://github.com/SuphasanManitsaKKU/MyNote-Express.git
+   cd MyNote-Express
    docker-compose up --build -d
    ```
 
